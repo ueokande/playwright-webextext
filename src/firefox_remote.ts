@@ -4,13 +4,13 @@
 import * as net from "node:net";
 import FirefoxRDPClient, {
   connectToFirefox as defaultFirefoxConnector,
-} from "./rdp-client";
+} from "./firefox_rdpclient";
 import type {
   FirefoxRDPAddonActor,
   RDPRequestType,
   RDPResponseMap,
   InstallTemporaryAddonResponse,
-} from "./types";
+} from "./firefox_types";
 
 export function isErrorWithCode(
   codeWanted: string | Array<string>,

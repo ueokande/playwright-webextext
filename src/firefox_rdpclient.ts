@@ -9,7 +9,7 @@ import type {
   RDPRequest,
   RDPRequestMap,
   RDPResponseMap,
-} from "./types";
+} from "./firefox_types";
 
 type RDPMessage = {
   from: string;

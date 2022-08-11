@@ -12,18 +12,25 @@ type LaunchPersistentContextOptions = Parameters<
   BrowserType["launchPersistentContext"]
 >[1];
 type FirefoxUserPrefs = { [key: string]: string | number | boolean };
-type Addon = { id: string };
 
 const DEFAULT_DEBUGGING_SERVER_PORT = 6000;
 
 export class FirefoxWithExtension implements BrowserType {
+  private readonly addonPaths: string[];
+
   constructor(
     private readonly browserType: BrowserType,
-    private readonly addonPath: string,
+    addonPaths: string | string[],
     private readonly defaultDebuggingServerPort = DEFAULT_DEBUGGING_SERVER_PORT
   ) {
     if (browserType.name() !== "firefox") {
       throw new Error(`unexpected browser: ${browserType.name()}`);
+    }
+
+    if (typeof addonPaths === "string") {
+      this.addonPaths = [addonPaths];
+    } else {
+      this.addonPaths = addonPaths;
     }
 
     this.connectOverCDP = browserType.connectOverCDP;
@@ -45,7 +52,7 @@ export class FirefoxWithExtension implements BrowserType {
       firefoxUserPrefs,
       ...options,
     });
-    await this.installAddon(port, this.addonPath);
+    await this.installAddons(port);
     return browser;
   }
 
@@ -54,7 +61,7 @@ export class FirefoxWithExtension implements BrowserType {
     options: LaunchPersistentContextOptions = {}
   ): Promise<BrowserContext> {
     const { args, port } = this.debuggingServerPortOverride(options.args);
-    await this.installAddon(port, this.addonPath);
+    await this.installAddons(port);
     return this.browserType.launchPersistentContext(userDataDir, {
       args,
       ...options,
@@ -71,7 +78,7 @@ export class FirefoxWithExtension implements BrowserType {
       firefoxUserPrefs,
       ...options,
     });
-    await this.installAddon(port, this.addonPath);
+    await this.installAddons(port);
     return browserServer;
   }
 
@@ -121,12 +128,12 @@ export class FirefoxWithExtension implements BrowserType {
     return newPrefs;
   }
 
-  async installAddon(
-    debuggingServerPort: number,
-    path: string
-  ): Promise<Addon> {
-    const client = await remote.connect(debuggingServerPort);
-    const resp = await client.installTemporaryAddon(path);
-    return { id: resp.addon.id };
+  async installAddons(debuggingServerPort: number): Promise<void[]> {
+    return Promise.all(
+      this.addonPaths.map(async (path) => {
+        const client = await remote.connect(debuggingServerPort);
+        await client.installTemporaryAddon(path);
+      })
+    );
   }
 }

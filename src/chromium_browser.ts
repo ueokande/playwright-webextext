@@ -12,13 +12,22 @@ type LaunchPersistentContextOptions = Parameters<
 >[1];
 
 export class ChromiumWithExtensions implements BrowserType {
+  private readonly extensionPaths: string[];
+
   constructor(
     private readonly browserType: BrowserType,
-    private readonly extensionPath: string
+    extensionPaths: string | string[]
   ) {
     if (browserType.name() !== "chromium") {
       throw new Error(`unexpected browser: ${browserType.name()}`);
     }
+
+    if (typeof extensionPaths === "string") {
+      this.extensionPaths = [extensionPaths];
+    } else {
+      this.extensionPaths = extensionPaths;
+    }
+
     this.connectOverCDP = browserType.connectOverCDP;
     this.connect = browserType.connect;
     this.executablePath = browserType.executablePath;
@@ -60,8 +69,8 @@ export class ChromiumWithExtensions implements BrowserType {
 
   private argsOverride(args: string[] = []): string[] {
     return [
-      `--disable-extensions-except=${this.extensionPath}`,
-      `--load-extension=${this.extensionPath}`,
+      `--disable-extensions-except=${this.extensionPaths.join(",")}`,
+      `--load-extension=${this.extensionPaths.join(",")}`,
       ...args,
     ];
   }

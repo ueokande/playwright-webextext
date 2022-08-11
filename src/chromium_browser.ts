@@ -5,6 +5,7 @@ import type {
   BrowserServer,
   LaunchOptions,
 } from "playwright-core";
+import { ChromiumOverrides } from "./chromium_overrides";
 
 type LaunchServerOptions = Parameters<BrowserType["launchServer"]>[0];
 type LaunchPersistentContextOptions = Parameters<
@@ -12,21 +13,16 @@ type LaunchPersistentContextOptions = Parameters<
 >[1];
 
 export class ChromiumWithExtensions implements BrowserType {
-  private readonly extensionPaths: string[];
+  private readonly overrides: ChromiumOverrides;
 
   constructor(
     private readonly browserType: BrowserType,
-    extensionPaths: string | string[]
+    extPaths: string | string[]
   ) {
     if (browserType.name() !== "chromium") {
       throw new Error(`unexpected browser: ${browserType.name()}`);
     }
-
-    if (typeof extensionPaths === "string") {
-      this.extensionPaths = [extensionPaths];
-    } else {
-      this.extensionPaths = extensionPaths;
-    }
+    this.overrides = new ChromiumOverrides(extPaths);
 
     this.connectOverCDP = browserType.connectOverCDP;
     this.connect = browserType.connect;
@@ -40,7 +36,7 @@ export class ChromiumWithExtensions implements BrowserType {
   name;
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
-    const args = this.argsOverride(options.args);
+    const args = this.overrides.args(options.args);
     const browser = await this.browserType.launch({ args, ...options });
     return browser;
   }
@@ -49,7 +45,7 @@ export class ChromiumWithExtensions implements BrowserType {
     userDataDir: string,
     options: LaunchPersistentContextOptions = {}
   ): Promise<BrowserContext> {
-    const args = this.argsOverride(options.args);
+    const args = this.overrides.args(options.args);
     return this.browserType.launchPersistentContext(userDataDir, {
       args,
       ...options,
@@ -59,19 +55,11 @@ export class ChromiumWithExtensions implements BrowserType {
   async launchServer(
     options: LaunchServerOptions = {}
   ): Promise<BrowserServer> {
-    const args = this.argsOverride(options.args);
+    const args = this.overrides.args(options.args);
     const browserServer = await this.browserType.launchServer({
       args,
       ...options,
     });
     return browserServer;
-  }
-
-  private argsOverride(args: string[] = []): string[] {
-    return [
-      `--disable-extensions-except=${this.extensionPaths.join(",")}`,
-      `--load-extension=${this.extensionPaths.join(",")}`,
-      ...args,
-    ];
   }
 }

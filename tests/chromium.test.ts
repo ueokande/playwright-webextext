@@ -1,16 +1,13 @@
-import { chromium, firefox } from "playwright";
+import { chromium } from "playwright";
 import { test, expect } from "@playwright/test";
 import * as path from "node:path";
-import { withExtension } from "../src";
+import { withExtension, ChromiumOverrides } from "../src";
 
-test("chromium installs extensions", async () => {
-  const browserTypeWithExtension = withExtension(
-    chromium,
-    [
-      path.join(__dirname, "deadbeef-extension"),
-      path.join(__dirname, "magic-number-extension")
-    ],
-  );
+test("chromium installs extensions with custom browser type", async () => {
+  const browserTypeWithExtension = withExtension(chromium, [
+    path.join(__dirname, "deadbeef-extension"),
+    path.join(__dirname, "magic-number-extension"),
+  ]);
   const browser = await browserTypeWithExtension.launchPersistentContext("", {
     headless: false,
   });
@@ -25,15 +22,15 @@ test("chromium installs extensions", async () => {
   expect(await deadbeef.textContent()).toBe("0xDEADBEEF");
 });
 
-test("firefox installs add-ons", async () => {
-  const browserTypeWithExtension = withExtension(
-    firefox,
-    [
-      path.join(__dirname, "magic-number-extension"),
-      path.join(__dirname, "deadbeef-extension")
-    ]
-  );
-  const browser = await browserTypeWithExtension.launch({ headless: true });
+test("chromium installs extensions with overrides", async () => {
+  const overrides = new ChromiumOverrides([
+    path.join(__dirname, "deadbeef-extension"),
+    path.join(__dirname, "magic-number-extension"),
+  ]);
+  const browser = await chromium.launchPersistentContext("", {
+    headless: false,
+    args: overrides.args(),
+  });
 
   const page = await browser.newPage();
   await page.goto("https://example.com/");

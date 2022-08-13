@@ -53,9 +53,9 @@ export class FirefoxWithExtension implements BrowserType {
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
     const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
     const browser = await this.browserType.launch({
+      ...options,
       args,
       firefoxUserPrefs,
-      ...options,
     });
     await this.installAddons(port);
     return browser;
@@ -69,8 +69,8 @@ export class FirefoxWithExtension implements BrowserType {
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
     await this.installAddons(port);
     return this.browserType.launchPersistentContext(userDataDir, {
-      args,
       ...options,
+      args,
     });
   }
 
@@ -81,9 +81,9 @@ export class FirefoxWithExtension implements BrowserType {
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
     const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
     const browserServer = await this.browserType.launchServer({
+      ...options,
       args,
       firefoxUserPrefs,
-      ...options,
     });
     await this.installAddons(port);
     return browserServer;

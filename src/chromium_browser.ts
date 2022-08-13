@@ -37,7 +37,7 @@ export class ChromiumWithExtensions implements BrowserType {
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
     const args = this.overrides.args(options.args);
-    const browser = await this.browserType.launch({ args, ...options });
+    const browser = await this.browserType.launch({ ...options, args });
     return browser;
   }
 
@@ -47,8 +47,8 @@ export class ChromiumWithExtensions implements BrowserType {
   ): Promise<BrowserContext> {
     const args = this.overrides.args(options.args);
     return this.browserType.launchPersistentContext(userDataDir, {
-      args,
       ...options,
+      args,
     });
   }
 
@@ -57,8 +57,8 @@ export class ChromiumWithExtensions implements BrowserType {
   ): Promise<BrowserServer> {
     const args = this.overrides.args(options.args);
     const browserServer = await this.browserType.launchServer({
-      args,
       ...options,
+      args,
     });
     return browserServer;
   }

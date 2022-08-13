@@ -4,6 +4,7 @@ import { ChromiumWithExtensions } from "./chromium_browser";
 import { FirefoxAddonInstaller } from "./firefox_addon_installer";
 import { FirefoxOverrides } from "./firefox_overrides";
 import { FirefoxWithExtension } from "./firefox_browser";
+import { createFixture } from "./fixtures";
 
 export {
   withExtension,
@@ -12,4 +13,5 @@ export {
   FirefoxAddonInstaller,
   FirefoxOverrides,
   FirefoxWithExtension,
+  createFixture,
 };

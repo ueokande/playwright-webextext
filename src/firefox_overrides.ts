@@ -1,11 +1,8 @@
 type FirefoxUserPrefs = { [key: string]: string | number | boolean };
-
-const DEFAULT_DEBUGGING_SERVER_PORT = 6000;
+import { DEFAULT_PORT } from "./firefox_rdpclient";
 
 export class FirefoxOverrides {
-  constructor(
-    private readonly defaultDebuggingServerPort = DEFAULT_DEBUGGING_SERVER_PORT
-  ) {}
+  constructor(private readonly defaultDebuggingServerPort = DEFAULT_PORT) {}
 
   debuggingServerPortArgs(args: string[] = []): {
     args: string[];

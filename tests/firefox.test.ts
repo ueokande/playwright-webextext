@@ -21,7 +21,7 @@ test("should installs add-ons with custom browser type", async () => {
 });
 
 test("should installs add-ons with overrides", async () => {
-  const overrides = new FirefoxOverrides(6001);
+  const overrides = new FirefoxOverrides();
   const { args, port } = overrides.debuggingServerPortArgs();
   const installer = new FirefoxAddonInstaller(port);
 

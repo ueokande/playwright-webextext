@@ -7,25 +7,29 @@ import type {
 } from "playwright-core";
 import { FirefoxOverrides } from "./firefox_overrides";
 import { FirefoxAddonInstaller } from "./firefox_addon_installer";
+import { findFreeTcpPort } from "./firefox_remote";
 
 type LaunchServerOptions = Parameters<BrowserType["launchServer"]>[0];
 type LaunchPersistentContextOptions = Parameters<
   BrowserType["launchPersistentContext"]
 >[1];
 
+type PortFn = () => number | Promise<number>;
+type Port = number | PortFn;
+
 export class FirefoxWithExtension implements BrowserType {
   private readonly addonPaths: string[];
-  private readonly overrides: FirefoxOverrides;
+  private readonly defaultPort: Port;
 
   constructor(
     private readonly browserType: BrowserType,
     addonPaths: string | string[],
-    defaultDebuggingServerPort?: number
+    defaultDebuggingServerPort: number | PortFn = findFreeTcpPort
   ) {
     if (browserType.name() !== "firefox") {
       throw new Error(`unexpected browser: ${browserType.name()}`);
     }
-    this.overrides = new FirefoxOverrides(defaultDebuggingServerPort);
+    this.defaultPort = defaultDebuggingServerPort;
 
     if (typeof addonPaths === "string") {
       this.addonPaths = [addonPaths];
@@ -45,8 +49,9 @@ export class FirefoxWithExtension implements BrowserType {
   name;
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
-    const { args, port } = this.overrides.debuggingServerPortArgs(options.args);
-    const firefoxUserPrefs = this.overrides.userPrefs(options.firefoxUserPrefs);
+    const overrides = new FirefoxOverrides(await this.getDefaultPort());
+    const { args, port } = overrides.debuggingServerPortArgs(options.args);
+    const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
     const browser = await this.browserType.launch({
       args,
       firefoxUserPrefs,
@@ -60,7 +65,8 @@ export class FirefoxWithExtension implements BrowserType {
     userDataDir: string,
     options: LaunchPersistentContextOptions = {}
   ): Promise<BrowserContext> {
-    const { args, port } = this.overrides.debuggingServerPortArgs(options.args);
+    const overrides = new FirefoxOverrides(await this.getDefaultPort());
+    const { args, port } = overrides.debuggingServerPortArgs(options.args);
     await this.installAddons(port);
     return this.browserType.launchPersistentContext(userDataDir, {
       args,
@@ -71,8 +77,9 @@ export class FirefoxWithExtension implements BrowserType {
   async launchServer(
     options: LaunchServerOptions = {}
   ): Promise<BrowserServer> {
-    const { args, port } = this.overrides.debuggingServerPortArgs(options.args);
-    const firefoxUserPrefs = this.overrides.userPrefs(options.firefoxUserPrefs);
+    const overrides = new FirefoxOverrides(await this.getDefaultPort());
+    const { args, port } = overrides.debuggingServerPortArgs(options.args);
+    const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
     const browserServer = await this.browserType.launchServer({
       args,
       firefoxUserPrefs,
@@ -89,5 +96,12 @@ export class FirefoxWithExtension implements BrowserType {
         await installer.install(path);
       })
     );
+  }
+
+  private async getDefaultPort(): Promise<number> {
+    if (typeof this.defaultPort === "function") {
+      return await this.defaultPort();
+    }
+    return this.defaultPort;
   }
 }

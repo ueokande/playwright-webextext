@@ -1,45 +1,36 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2020",
     "module": "commonjs",
-    "lib": ["es6", "dom", "esnext"],
-    "allowJs": true,
-    "checkJs": false,
-    "jsx": "react",
+    "lib": [ "es2020", "dom" ],
     "sourceMap": true,
-    "outDir": "./build",
-    "removeComments": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "src",
+    "removeComments": false,
     "importHelpers": true,
-
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
+    "declaration": true,
+    "declarationMap": true,
     "alwaysStrict": true,
-
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-
     "moduleResolution": "node",
-    "esModuleInterop": true,
-
-    "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"],
-
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true
+    "esModuleInterop": true
   },
   "include": [
-    "src"
+    "src/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "./node_modules",
-    "./node_modules/*",
-    "./node_modules/@types/node/index.d.ts"
+    "dist",
+    "test",
+    "node_modules"
   ]
 }

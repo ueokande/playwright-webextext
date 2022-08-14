@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    name: E2E Test
+    name: Run test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -15,3 +15,21 @@ jobs:
         cache: 'yarn'
     - run: yarn install --frozen-lockfile
     - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test
+
+  publish:
+    name: Publish to NPM
+    needs: [test]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'yarn'
+        registry-url: 'https://registry.npmjs.org'
+    - run: yarn install --frozen-lockfile
+    - run: yarn build
+    - run: yarn publish --new-version $(jq -r .version <package.json)
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

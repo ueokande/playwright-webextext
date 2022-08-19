@@ -2,6 +2,8 @@
 
 This extension library enables loading firefox add-ons and chromium extensions from the local filesystem for [playwright][].
 
+![Screenshot](screenshot.gif)
+
 ## Install
 
 Install by `npm`:

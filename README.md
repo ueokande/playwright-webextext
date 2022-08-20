@@ -79,6 +79,24 @@ test("should launch browser with extensions", async ({ page }) => {
 });
 ```
 
+## How does it work
+
+### Chromium
+
+The playwright introduces a way to install chrome extensions in the document.  Chromium supports installing extensions via [command-line options][chrome-launch-switches].  The playwright-webextext launches a chromium browser with command-line options with extension paths.  See the following document for more details:
+
+- [Chrome Extensions | Playwright](https://playwright.dev/docs/chrome-extensions)
+
+Note that using chrome extensions has two limitations: 1) the browser should run on headed mode, and 2) you should launch the browser with a persistent context (`launchPersistentContext()`).
+
+[chrome-launch-switches]: https://sites.google.com/site/chromeappupdates/launch-switches
+
+### Firefox
+
+Firefox provides a remote debugging server to control the browser via a [remote debugging protocol][].  This protocol also enables installing a temporary add-on.  The playwright-webextext installs add-ons by this protocol.
+
+[remote debugging protocol]: https://firefox-source-docs.mozilla.org/devtools/backend/protocol.html
+
 ## LICENSE
 
 [MIT](./LICENSE)

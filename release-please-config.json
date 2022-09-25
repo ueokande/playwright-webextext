@@ -1,0 +1,16 @@
+{
+  "bootstrap-sha": "e5e75873de3de87c9711c954a94fed131b2f7f20",
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "playwright-webextext",
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "include-component-in-tag": false,
+      "include-v-in-tag": true
+    }
+  }
+}

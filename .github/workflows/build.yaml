@@ -18,6 +18,7 @@ jobs:
 
   publish:
     name: Publish to NPM
+    if: github.ref == 'refs/heads/master'
     needs: [test]
     runs-on: ubuntu-latest
     steps:

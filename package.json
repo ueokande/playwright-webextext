@@ -1,6 +1,6 @@
 {
   "name": "playwright-webextext",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Playwright extension for tesiting WebExtensions",
   "repository": "git@github.com:ueokande/playwright-webextext.git",
   "author": "Shin'ya Ueoka <ueokande@i-beam.org>",

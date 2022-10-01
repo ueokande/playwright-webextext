@@ -18,6 +18,9 @@ jobs:
         cache: 'yarn'
     - run: yarn install --frozen-lockfile
     - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test
+      if: runner.os == 'Linux'
+    - run: yarn test
+      if: runner.os != 'Linux'
 
   publish:
     name: Publish to NPM

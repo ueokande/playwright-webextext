@@ -6,7 +6,10 @@ on:
 jobs:
   test:
     name: Run test
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos, windows]
+    runs-on: ${{ matrix.os }}-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -15,6 +18,9 @@ jobs:
         cache: 'yarn'
     - run: yarn install --frozen-lockfile
     - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test
+      if: runner.os == 'Linux'
+    - run: yarn test
+      if: runner.os != 'Linux'
 
   publish:
     name: Publish to NPM

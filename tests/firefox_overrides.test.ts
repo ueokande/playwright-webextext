@@ -65,15 +65,21 @@ test.describe("userPrefs", () => {
       "browser.search.region": "AU",
       "devtools.debugger.remote-enabled": true,
     });
+    const prefs4 = overrides.userPrefs({
+      "browser.search.region": "AU",
+      "extensions.manifestV3.enabled": true,
+    });
 
     const expected = {
       "browser.search.region": "AU",
       "devtools.debugger.prompt-connection": false,
       "devtools.debugger.remote-enabled": true,
+      "extensions.manifestV3.enabled": true,
     };
     expect(prefs1).toEqual(expected);
     expect(prefs2).toEqual(expected);
     expect(prefs3).toEqual(expected);
+    expect(prefs4).toEqual(expected);
   });
 
   test("should throws an error with defied preferences", () => {
@@ -103,5 +109,11 @@ test.describe("userPrefs", () => {
         "devtools.debugger.remote-enabled": 1,
       });
     }).toThrowError("devtools.debugger.remote-enabled");
+    expect(() => {
+      overrides.userPrefs({
+        "browser.search.region": "AU",
+        "extensions.manifestV3.enabled": false,
+      });
+    }).toThrowError("extensions.manifestV3.enabled");
   });
 });

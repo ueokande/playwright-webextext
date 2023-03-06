@@ -32,6 +32,7 @@ export class FirefoxOverrides {
     const DEVTOOLS_DEBUGGER_REMOTE_ENABLED = "devtools.debugger.remote-enabled";
     const DEVTOOLS_DEBUGGER_PROMPT_CONNECTION =
       "devtools.debugger.prompt-connection";
+    const EXTENSIONS_MANIFESTV3_ENABLED = "extensions.manifestV3.enabled";
     const newPrefs = { ...prefs };
 
     const remoteEnabled = prefs[DEVTOOLS_DEBUGGER_REMOTE_ENABLED];
@@ -46,6 +47,13 @@ export class FirefoxOverrides {
       newPrefs[DEVTOOLS_DEBUGGER_PROMPT_CONNECTION] = false;
     } else if (promptConnection !== false) {
       throw new Error(`${DEVTOOLS_DEBUGGER_PROMPT_CONNECTION} must be false`);
+    }
+
+    const manifestV3Enabled = prefs[EXTENSIONS_MANIFESTV3_ENABLED];
+    if (typeof manifestV3Enabled === "undefined") {
+      newPrefs[EXTENSIONS_MANIFESTV3_ENABLED] = true;
+    } else if (manifestV3Enabled !== true) {
+      throw new Error(`${EXTENSIONS_MANIFESTV3_ENABLED} must be true`);
     }
     return newPrefs;
   }

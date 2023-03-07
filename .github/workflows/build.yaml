@@ -4,6 +4,18 @@ on:
   push:
 
 jobs:
+  lint:
+    name: Run lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'yarn'
+    - run: yarn install --frozen-lockfile
+    - run: yarn lint
+
   test:
     name: Run test
     strategy:
@@ -25,7 +37,7 @@ jobs:
   publish:
     name: Publish to NPM
     if: github.ref == 'refs/heads/master'
-    needs: [test]
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
     - uses: google-github-actions/release-please-action@v3

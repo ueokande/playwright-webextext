@@ -12,7 +12,7 @@
     "lint:fix": "eslint --ext .ts,.tsx . --fix"
   },
   "devDependencies": {
-    "@playwright/test": "^1.31.2",
+    "@playwright/test": "^1.32.3",
     "@types/node": "^18.14.6",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",

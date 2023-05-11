@@ -1,6 +1,6 @@
 {
   "name": "playwright-webextext",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Playwright extension for tesiting WebExtensions",
   "repository": "git@github.com:ueokande/playwright-webextext.git",
   "author": "Shin'ya Ueoka <ueokande@i-beam.org>",
@@ -26,8 +26,8 @@
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
-    "@playwright/test": "1.26.0",
-    "playwright": "1.26.0"
+    "@playwright/test": "1.33.0",
+    "playwright": "1.33.0"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

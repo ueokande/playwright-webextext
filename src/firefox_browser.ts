@@ -67,11 +67,17 @@ export class FirefoxWithExtension implements BrowserType {
   ): Promise<BrowserContext> {
     const overrides = new FirefoxOverrides(await this.getDefaultPort());
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
+    const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
+    const browser = await this.browserType.launchPersistentContext(
+      userDataDir,
+      {
+        ...options,
+        args,
+        firefoxUserPrefs,
+      },
+    );
     await this.installAddons(port);
-    return this.browserType.launchPersistentContext(userDataDir, {
-      ...options,
-      args,
-    });
+    return browser;
   }
 
   async launchServer(

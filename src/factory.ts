@@ -4,7 +4,7 @@ import { ChromiumWithExtensions } from "./chromium_browser";
 
 export const withExtension = (
   browserType: BrowserType,
-  extensionsPaths: string | string[]
+  extensionsPaths: string | string[],
 ): BrowserType => {
   switch (browserType.name()) {
     case "firefox":

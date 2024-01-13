@@ -24,7 +24,7 @@ export class FirefoxWithExtension implements BrowserType {
   constructor(
     private readonly browserType: BrowserType,
     addonPaths: string | string[],
-    defaultDebuggingServerPort: number | PortFn = findFreeTcpPort
+    defaultDebuggingServerPort: number | PortFn = findFreeTcpPort,
   ) {
     if (browserType.name() !== "firefox") {
       throw new Error(`unexpected browser: ${browserType.name()}`);
@@ -63,7 +63,7 @@ export class FirefoxWithExtension implements BrowserType {
 
   async launchPersistentContext(
     userDataDir: string,
-    options: LaunchPersistentContextOptions = {}
+    options: LaunchPersistentContextOptions = {},
   ): Promise<BrowserContext> {
     const overrides = new FirefoxOverrides(await this.getDefaultPort());
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
@@ -75,7 +75,7 @@ export class FirefoxWithExtension implements BrowserType {
   }
 
   async launchServer(
-    options: LaunchServerOptions = {}
+    options: LaunchServerOptions = {},
   ): Promise<BrowserServer> {
     const overrides = new FirefoxOverrides(await this.getDefaultPort());
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
@@ -94,7 +94,7 @@ export class FirefoxWithExtension implements BrowserType {
     return Promise.all(
       this.addonPaths.map(async (path) => {
         await installer.install(path);
-      })
+      }),
     );
   }
 

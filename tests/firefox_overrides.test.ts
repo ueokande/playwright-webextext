@@ -6,7 +6,7 @@ test.describe("debuggingServerPortArgs", () => {
     const overrides = new FirefoxOverrides(12345);
     const originalArgs =
       "-childID 10 -start-debugger-server 9999 -profile /tmp/profile".split(
-        " "
+        " ",
       );
     const { args, port } = overrides.debuggingServerPortArgs(originalArgs);
 
@@ -42,11 +42,11 @@ test.describe("debuggingServerPortArgs", () => {
     const overrides = new FirefoxOverrides(12345);
     const originalArgs =
       "-childID 10 -start-debugger-server PORT -profile /tmp/profile".split(
-        " "
+        " ",
       );
 
     expect(() => overrides.debuggingServerPortArgs(originalArgs)).toThrowError(
-      "invalid argument"
+      "invalid argument",
     );
   });
 });

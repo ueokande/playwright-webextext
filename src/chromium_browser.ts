@@ -17,7 +17,7 @@ export class ChromiumWithExtensions implements BrowserType {
 
   constructor(
     private readonly browserType: BrowserType,
-    extPaths: string | string[]
+    extPaths: string | string[],
   ) {
     if (browserType.name() !== "chromium") {
       throw new Error(`unexpected browser: ${browserType.name()}`);
@@ -43,7 +43,7 @@ export class ChromiumWithExtensions implements BrowserType {
 
   async launchPersistentContext(
     userDataDir: string,
-    options: LaunchPersistentContextOptions = {}
+    options: LaunchPersistentContextOptions = {},
   ): Promise<BrowserContext> {
     const args = this.overrides.args(options.args);
     return this.browserType.launchPersistentContext(userDataDir, {
@@ -53,7 +53,7 @@ export class ChromiumWithExtensions implements BrowserType {
   }
 
   async launchServer(
-    options: LaunchServerOptions = {}
+    options: LaunchServerOptions = {},
   ): Promise<BrowserServer> {
     const args = this.overrides.args(options.args);
     const browserServer = await this.browserType.launchServer({

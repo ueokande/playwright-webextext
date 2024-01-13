@@ -9,13 +9,13 @@ export class FirefoxOverrides {
     port: number;
   } {
     const index = args.findIndex((arg) =>
-      arg.includes("start-debugger-server")
+      arg.includes("start-debugger-server"),
     );
     if (index === -1) {
       return {
         args: args.concat(
           "--start-debugger-server",
-          String(this.defaultDebuggingServerPort)
+          String(this.defaultDebuggingServerPort),
         ),
         port: this.defaultDebuggingServerPort,
       };

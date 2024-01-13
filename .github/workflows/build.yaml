@@ -5,7 +5,7 @@ on:
 
 jobs:
   lint:
-    name: Run lint
+    name: Run lint and build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -16,6 +16,7 @@ jobs:
         cache: 'pnpm'
     - run: pnpm install --frozen-lockfile
     - run: pnpm run lint
+    - run: pnpm run build
 
   test:
     name: Run test

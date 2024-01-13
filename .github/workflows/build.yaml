@@ -29,6 +29,7 @@ jobs:
     - uses: pnpm/action-setup@v2
     - uses: actions/setup-node@v3
     - run: pnpm install --frozen-lockfile
+    - run: pnpm exec playwright install
     - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test
       if: runner.os == 'Linux'
     - run: pnpm run test

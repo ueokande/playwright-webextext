@@ -5,6 +5,10 @@
   "repository": "git@github.com:ueokande/playwright-webextext.git",
   "author": "Shin'ya Ueoka <ueokande@i-beam.org>",
   "license": "MIT",
+  "packageManager": "pnpm@8.14.1",
+  "engines": {
+    "node": "20"
+  },
   "scripts": {
     "build": "tsc",
     "test": "playwright test --headed",

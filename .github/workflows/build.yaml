@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2
     - uses: actions/setup-node@v3
       with:
-        node-version: '18'
-        cache: 'yarn'
-    - run: yarn install --frozen-lockfile
-    - run: yarn lint
+        node-version-file: 'package.json'
+        cache: 'pnpm'
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm run lint
 
   test:
     name: Run test
@@ -24,14 +25,12 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
     - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2
     - uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'yarn'
-    - run: yarn install --frozen-lockfile
-    - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test
+    - run: pnpm install --frozen-lockfile
+    - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test
       if: runner.os == 'Linux'
-    - run: yarn test
+    - run: pnpm run test
       if: runner.os != 'Linux'
 
   publish:
@@ -46,17 +45,18 @@ jobs:
         command: manifest
     - uses: actions/checkout@v3
       if: ${{ steps.release.outputs.release_created }}
+    - uses: pnpm/action-setup@v2
     - uses: actions/setup-node@v3
       with:
-        node-version: '18'
-        cache: 'yarn'
+        node-version-file: 'package.json'
+        cache: 'pnpm'
         registry-url: 'https://registry.npmjs.org'
       if: ${{ steps.release.outputs.release_created }}
-    - run: yarn install --frozen-lockfile
+    - run: pnpm install --frozen-lockfile
       if: ${{ steps.release.outputs.release_created }}
-    - run: yarn build
+    - run: pnpm run build
       if: ${{ steps.release.outputs.release_created }}
-    - run: yarn publish --new-version $(jq -r .version <package.json)
+    - run: pnpm publish --new-version $(jq -r .version <package.json)
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       if: ${{ steps.release.outputs.release_created }}

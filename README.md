@@ -6,16 +6,12 @@ This extension library enables loading firefox add-ons and chromium extensions f
 
 ## Install
 
-Install by `npm`:
+Install by your package manager
 
 ```console
-$ npm install --save playwright-webextext
-```
-
-or install with `yarn`:
-
-```console
-$ yarn add playwright-webextext
+$ npm install --save playwright-webextext   # npm
+$ yarn add playwright-webextext             # yarn
+$ pnpm add playwright-webextext             # pnpm
 ```
 
 ## API

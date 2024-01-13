@@ -20,7 +20,7 @@ updates:
         - "eslint-*"
         - "prettier"
         - "prettier-*"
-    jest:
+    playwright:
       patterns:
         - "playwright"
         - "playwright-*"

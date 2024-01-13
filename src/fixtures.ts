@@ -6,7 +6,7 @@ export const createFixture = (extPaths: string | string[]) => {
     browser: [
       async ({ playwright, browserName }, use) => {
         await use(
-          await withExtension(playwright[browserName], extPaths).launch()
+          await withExtension(playwright[browserName], extPaths).launch(),
         );
       },
       { scope: "worker", timeout: 0 },
@@ -16,7 +16,7 @@ export const createFixture = (extPaths: string | string[]) => {
         if (browserName === "chromium") {
           if (headless) {
             throw new Error(
-              "launching chromium with extensions is only supported in headed browsers"
+              "launching chromium with extensions is only supported in headed browsers",
             );
           }
           const browserType = withExtension(playwright[browserName], extPaths);

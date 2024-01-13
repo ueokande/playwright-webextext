@@ -14,7 +14,7 @@ import type {
 
 export function isErrorWithCode(
   codeWanted: string | Array<string>,
-  error: any
+  error: any,
 ): boolean {
   if (Array.isArray(codeWanted) && codeWanted.indexOf(error.code) !== -1) {
     return true;
@@ -55,7 +55,7 @@ export class RemoteFirefox {
 
   async addonRequest<K extends RDPRequestType>(
     addon: FirefoxRDPAddonActor,
-    request: K
+    request: K,
   ): Promise<RDPResponseMap[K]> {
     try {
       const response = await this.client.request({
@@ -77,8 +77,8 @@ export class RemoteFirefox {
         return Promise.reject(
           new Error(
             "This version of Firefox does not provide an add-ons actor for " +
-              "remote installation."
-          )
+              "remote installation.",
+          ),
         );
       }
       return response.addonsActor;
@@ -94,8 +94,8 @@ export class RemoteFirefox {
           new Error(
             "This is an older version of Firefox that does not provide an " +
               "add-ons actor for remote installation. Try Firefox 49 or " +
-              "higher."
-          )
+              "higher.",
+          ),
         );
       }
       return response.addonsActor;
@@ -106,7 +106,7 @@ export class RemoteFirefox {
   }
 
   async installTemporaryAddon(
-    addonPath: string
+    addonPath: string,
   ): Promise<InstallTemporaryAddonResponse> {
     const addonsActor = await this.getAddonsActor();
 
@@ -132,7 +132,7 @@ export class RemoteFirefox {
         }
       }
       return Promise.reject(
-        new Error("The remote Firefox does not have your extension installed")
+        new Error("The remote Firefox does not have your extension installed"),
       );
     } catch (err: any) {
       const message = requestErrorToMessage(err);
@@ -141,7 +141,7 @@ export class RemoteFirefox {
   }
 
   async checkForAddonReloading(
-    addon: FirefoxRDPAddonActor
+    addon: FirefoxRDPAddonActor,
   ): Promise<FirefoxRDPAddonActor> {
     if (this.checkedForAddonReloading) {
       // We only need to check once if reload() is supported.
@@ -152,7 +152,7 @@ export class RemoteFirefox {
       if (response.requestTypes.indexOf("reload") === -1) {
         throw new Error(
           "This Firefox version does not support add-on reloading. " +
-            "Re-run with --no-reload"
+            "Re-run with --no-reload",
         );
       } else {
         this.checkedForAddonReloading = true;
@@ -176,7 +176,7 @@ export type ConnectOptions = {
 
 export async function connect(
   port: number,
-  { connectToFirefox = defaultFirefoxConnector }: ConnectOptions = {}
+  { connectToFirefox = defaultFirefoxConnector }: ConnectOptions = {},
 ): Promise<RemoteFirefox> {
   const client = await connectToFirefox(port);
   return new RemoteFirefox(client);
@@ -197,7 +197,7 @@ export type ConnectWithMaxRetriesDeps = {
 export async function connectWithMaxRetries(
   // A max of 250 will try connecting for 30 seconds.
   { maxRetries = 250, retryInterval = 120, port }: ConnectWithMaxRetriesParams,
-  { connectToFirefox = connect }: ConnectWithMaxRetriesDeps = {}
+  { connectToFirefox = connect }: ConnectWithMaxRetriesDeps = {},
 ): Promise<RemoteFirefox> {
   async function establishConnection() {
     let lastError;

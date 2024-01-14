@@ -59,7 +59,7 @@ jobs:
       if: ${{ steps.release.outputs.release_created }}
     - run: pnpm run build
       if: ${{ steps.release.outputs.release_created }}
-    - run: pnpm publish --new-version $(jq -r .version <package.json)
+    - run: pnpm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       if: ${{ steps.release.outputs.release_created }}

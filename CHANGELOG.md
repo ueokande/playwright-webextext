@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.4](https://github.com/ueokande/playwright-webextext/compare/v0.0.3...v0.0.4) (2024-01-14)
+
+
+### Bug Fixes
+
+* automatic permission approval ([#273](https://github.com/ueokande/playwright-webextext/issues/273)) ([b969313](https://github.com/ueokande/playwright-webextext/commit/b969313eee69fd990dc5843e2e793608d92143af))
+* change supported playwright version ([#264](https://github.com/ueokande/playwright-webextext/issues/264)) ([812b39a](https://github.com/ueokande/playwright-webextext/commit/812b39a89488f2d58f80b332ef57fd123d12accf))
+
 ## [0.0.3](https://github.com/ueokande/playwright-webextext/compare/v0.0.2...v0.0.3) (2023-03-07)
 
 

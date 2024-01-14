@@ -104,11 +104,11 @@ export class FirefoxWithExtension implements BrowserType {
 
   async installAddons(debuggingServerPort: number): Promise<void> {
     const installer = new FirefoxAddonInstaller(debuggingServerPort);
-    const result: Array<{ path: string; addonId: string }> = [];
-    for (const path of this.addonPaths) {
-      const resp = await installer.install(path);
-      result.push({ path, addonId: resp.addon.id });
-    }
+    await Promise.all(
+      this.addonPaths.map(async (path) => {
+        await installer.install(path);
+      }),
+    );
   }
 
   async overridePermissions(userDataDir: string): Promise<void> {

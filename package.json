@@ -1,13 +1,13 @@
 {
   "name": "playwright-webextext",
-  "version": "0.0.4",
-  "description": "Playwright extension for tesiting WebExtensions",
+  "version": "0.0.5",
+  "description": "Playwright extension for testing WebExtensions",
   "repository": "git@github.com:ueokande/playwright-webextext.git",
   "author": "Shin'ya Ueoka <ueokande@i-beam.org>",
   "license": "MIT",
   "packageManager": "pnpm@8.14.1",
   "engines": {
-    "node": "20"
+    "node": ">=20"
   },
   "scripts": {
     "build": "tsc",

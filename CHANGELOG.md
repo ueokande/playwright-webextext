@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/ueokande/playwright-webextext/compare/v0.0.4...v0.0.5) (2026-02-21)
+
+
+### Bug Fixes
+
+* Relax node engine requirement to support Node 22 ([#365](https://github.com/ueokande/playwright-webextext/issues/365)) ([16e0fb5](https://github.com/ueokande/playwright-webextext/commit/16e0fb5a4ba75568097741dd11d907691fb09dd3))
+
 ## [0.0.4](https://github.com/ueokande/playwright-webextext/compare/v0.0.3...v0.0.4) (2024-01-14)
 
 

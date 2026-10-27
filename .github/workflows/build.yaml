@@ -35,6 +35,10 @@ jobs:
       with:
         node-version-file: '.node-version'
     - run: pnpm install --frozen-lockfile
+    # Playwright 1.40 browser downloads require the older supported runtime.
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: 24
     - name: Install Playwright browsers
       shell: bash
       run: |
@@ -50,8 +54,9 @@ jobs:
           exit 1
         fi
       timeout-minutes: 5
-      env:
-        PLAYWRIGHT_DOWNLOAD_HOST: https://cdn.playwright.dev
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: .node-version
     - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test
       if: runner.os == 'Linux'
     - run: pnpm run test

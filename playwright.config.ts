@@ -12,6 +12,7 @@ export default defineConfig({
       use: { browserName: "chromium" },
       testMatch: [
         "**/chromium.test.ts",
+        "**/browser_type.test.ts",
         "**/fixture.test.ts",
         "**/*_overrides.test.ts",
         "**/firefox_extension_preferences.test.ts",

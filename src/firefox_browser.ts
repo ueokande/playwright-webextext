@@ -40,10 +40,10 @@ export class FirefoxWithExtension implements BrowserType {
       this.addonPaths = addonPaths;
     }
 
-    this.connectOverCDP = browserType.connectOverCDP;
-    this.connect = browserType.connect;
-    this.executablePath = browserType.executablePath;
-    this.name = browserType.name;
+    this.connectOverCDP = browserType.connectOverCDP.bind(browserType);
+    this.connect = browserType.connect.bind(browserType);
+    this.executablePath = browserType.executablePath.bind(browserType);
+    this.name = browserType.name.bind(browserType);
   }
 
   connectOverCDP;

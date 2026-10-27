@@ -1,6 +1,6 @@
-import { firefox } from "playwright";
-import { test, expect } from "@playwright/test";
 import * as path from "node:path";
+import { expect, test } from "@playwright/test";
+import { firefox } from "playwright";
 import { withExtension } from "../src";
 
 test("should installs add-ons with custom browser type", async () => {

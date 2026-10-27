@@ -1,4 +1,5 @@
 type FirefoxUserPrefs = { [key: string]: string | number | boolean };
+
 import { DEFAULT_PORT } from "./firefox_rdpclient";
 
 export class FirefoxOverrides {

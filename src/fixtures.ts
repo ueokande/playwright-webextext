@@ -1,5 +1,5 @@
-import { withExtension } from "./factory";
 import { test as base, expect } from "@playwright/test";
+import { withExtension } from "./factory";
 
 export const createFixture = (extPaths: string | string[]) => {
   const test = base.extend<Record<never, never>>({

@@ -6,7 +6,7 @@
     {
       "run_at": "document_end",
       "matches": ["<all_urls>"],
-      "js": [ "content.js" ]
+      "js": ["content.js"]
     }
   ]
 }

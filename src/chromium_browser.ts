@@ -1,8 +1,8 @@
 import type {
   Browser,
   BrowserContext,
-  BrowserType,
   BrowserServer,
+  BrowserType,
   LaunchOptions,
 } from "playwright-core";
 import { ChromiumOverrides } from "./chromium_overrides";

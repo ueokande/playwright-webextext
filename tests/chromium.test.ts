@@ -1,6 +1,6 @@
-import { chromium } from "playwright";
-import { test, expect } from "@playwright/test";
 import * as path from "node:path";
+import { expect, test } from "@playwright/test";
+import { chromium } from "playwright";
 import { withExtension } from "../src";
 
 test("chromium installs extensions with custom browser type", async () => {

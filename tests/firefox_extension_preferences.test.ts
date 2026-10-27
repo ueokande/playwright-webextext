@@ -1,11 +1,11 @@
-import { test, expect } from "@playwright/test";
-import {
-  FirefoxExtensionPreferencesBuilder,
-  FirefoxExtensionPreferenceRepository,
-} from "../src/firefox_extension_preferences";
+import { expect, test } from "@playwright/test";
 import fs from "fs/promises";
-import path from "path";
 import os from "os";
+import path from "path";
+import {
+  FirefoxExtensionPreferenceRepository,
+  FirefoxExtensionPreferencesBuilder,
+} from "../src/firefox_extension_preferences";
 
 test.describe("FirefoxExtensionPreferencesBuilder", () => {
   test.describe("new", () => {

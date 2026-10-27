@@ -1,16 +1,16 @@
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import type {
   Browser,
   BrowserContext,
-  BrowserType,
   BrowserServer,
+  BrowserType,
   LaunchOptions,
 } from "playwright-core";
-import { FirefoxOverrides } from "./firefox_overrides";
 import { FirefoxAddonInstaller } from "./firefox_addon_installer";
 import { FirefoxExtensionPreferenceRepository } from "./firefox_extension_preferences";
+import { FirefoxOverrides } from "./firefox_overrides";
 import { findFreeTcpPort } from "./firefox_remote";
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
 
 type LaunchServerOptions = Parameters<BrowserType["launchServer"]>[0];
 type LaunchPersistentContextOptions = Parameters<

@@ -11,7 +11,7 @@
 ## Development and validation
 
 - Use Node.js >=20 and the pinned package manager, pnpm 8.14.1. Install with `pnpm install --frozen-lockfile`; do not regenerate the lockfile unless dependency changes are needed.
-- Follow the existing TypeScript style and ESLint/Prettier configuration. Prefer clear names and small, focused changes over new abstractions.
+- Follow the existing TypeScript style and Biome configuration. Prefer clear names and small, focused changes over new abstractions.
 - For code changes, run `pnpm run lint`, `pnpm run build`, and the existing tests relevant to the changed behavior. Add regression coverage for behavior changes when appropriate; documentation-only changes do not require browser tests.
 - Browser setup: `pnpm exec playwright install chromium firefox`. Run browser tests in headed mode with a working display; Linux CI uses `xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test`.
 - Browser tests visit `https://example.com/`. Chromium extension tests require a headed persistent context; Firefox uses its remote debugging protocol. Keep these constraints in mind when changing launch behavior.

@@ -5,9 +5,9 @@
   "repository": "git@github.com:ueokande/playwright-webextext.git",
   "author": "Shin'ya Ueoka <ueokande@i-beam.org>",
   "license": "MIT",
-  "packageManager": "pnpm@8.14.1",
+  "packageManager": "pnpm@12.15.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "build": "tsc",

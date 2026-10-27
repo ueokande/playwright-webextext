@@ -51,7 +51,7 @@ jobs:
         fi
       timeout-minutes: 5
       env:
-        PLAYWRIGHT_DOWNLOAD_HOST: https://cdn.playwright.dev/dbazure/download/playwright
+        PLAYWRIGHT_DOWNLOAD_HOST: https://cdn.playwright.dev
     - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test
       if: runner.os == 'Linux'
     - run: pnpm run test

@@ -35,7 +35,20 @@ jobs:
       with:
         node-version-file: '.node-version'
     - run: pnpm install --frozen-lockfile
-    - run: pnpm exec playwright install chromium firefox
+    - name: Install Playwright browsers
+      shell: bash
+      run: |
+        if pnpm exec playwright install chromium firefox > playwright-install.log 2>&1; then
+          cat playwright-install.log
+        else
+          cat playwright-install.log
+          while IFS= read -r line; do
+            line="${line//%/%25}"
+            line="${line//$'\r'/%0D}"
+            printf '::error::%s\n' "$line"
+          done < <(tail -n 30 playwright-install.log)
+          exit 1
+        fi
       timeout-minutes: 5
       env:
         PLAYWRIGHT_DOWNLOAD_HOST: https://cdn.playwright.dev/dbazure/download/playwright

@@ -1,3 +1,6 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { test as base, expect } from "@playwright/test";
 import { withExtension } from "./factory";
 
@@ -5,29 +8,44 @@ export const createFixture = (extPaths: string | string[]) => {
   const test = base.extend<Record<never, never>>({
     browser: [
       async ({ playwright, browserName }, use) => {
-        await use(
-          await withExtension(playwright[browserName], extPaths).launch(),
-        );
+        const browser = await withExtension(
+          playwright[browserName],
+          extPaths,
+        ).launch();
+        try {
+          await use(browser);
+        } finally {
+          await browser.close();
+        }
       },
       { scope: "worker", timeout: 0 },
     ],
     context: [
-      async ({ context, playwright, browserName, headless }, use) => {
-        if (browserName === "chromium") {
-          if (headless) {
-            throw new Error(
-              "launching chromium with extensions is only supported in headed browsers",
-            );
-          }
+      async ({ playwright, browserName, headless }, use) => {
+        if (browserName === "chromium" && headless) {
+          throw new Error(
+            "launching chromium with extensions is only supported in headed browsers",
+          );
+        }
+        const userDataDir = await mkdtemp(
+          join(tmpdir(), "playwright-webextext-"),
+        );
+        try {
           const browserType = withExtension(playwright[browserName], extPaths);
-          const newContext = await browserType.launchPersistentContext("", {
-            headless: false,
-          });
-          await use(newContext);
-          await context.close();
-        } else {
-          await use(context);
-          await context.close();
+          // Firefox MV3 content-script permissions must be written before launch.
+          const context = await browserType.launchPersistentContext(
+            userDataDir,
+            {
+              headless,
+            },
+          );
+          try {
+            await use(context);
+          } finally {
+            await context.close();
+          }
+        } finally {
+          await rm(userDataDir, { recursive: true, force: true });
         }
       },
       { scope: "test" },

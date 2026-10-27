@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Magic Number Extensions",
   "description": "This extension injects a magic number to pages",
   "version": "1.0.0",
@@ -9,5 +9,10 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "magic-number-extension@playwright-webextext.test"
+    }
+  }
 }

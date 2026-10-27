@@ -4,7 +4,7 @@ import type {
   BrowserServer,
   BrowserType,
   LaunchOptions,
-} from "playwright-core";
+} from "playwright";
 import { ChromiumOverrides } from "./chromium_overrides";
 
 type LaunchServerOptions = Parameters<BrowserType["launchServer"]>[0];

@@ -87,7 +87,7 @@ test.describe("FirefoxExtensionPreferencesRepository", () => {
     await fs.rm(tmpdir, { recursive: true });
   });
 
-  test.only("should create a new preferences", async () => {
+  test("should create a new preferences", async () => {
     const repo = new FirefoxExtensionPreferenceRepository(userDataDir);
     await repo.patch((b) => {
       b.addPermissions("addon@id", ["clipboardRead"]);

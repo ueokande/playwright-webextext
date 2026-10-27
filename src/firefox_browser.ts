@@ -6,7 +6,7 @@ import type {
   BrowserServer,
   BrowserType,
   LaunchOptions,
-} from "playwright-core";
+} from "playwright";
 import { FirefoxAddonInstaller } from "./firefox_addon_installer";
 import { FirefoxExtensionPreferenceRepository } from "./firefox_extension_preferences";
 import { FirefoxOverrides } from "./firefox_overrides";

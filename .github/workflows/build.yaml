@@ -35,14 +35,10 @@ jobs:
       with:
         node-version-file: '.node-version'
     - run: pnpm install --frozen-lockfile
-    # Playwright 1.40 browser downloads require the older supported runtime.
-    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-      with:
-        node-version: 24
     - name: Install Playwright browsers
       shell: bash
       run: |
-        if pnpm exec playwright install chromium firefox > playwright-install.log 2>&1; then
+        if pnpm exec playwright install --with-deps chromium firefox > playwright-install.log 2>&1; then
           cat playwright-install.log
         else
           cat playwright-install.log
@@ -53,10 +49,7 @@ jobs:
           done < <(tail -n 30 playwright-install.log)
           exit 1
         fi
-      timeout-minutes: 5
-    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-      with:
-        node-version-file: .node-version
+      timeout-minutes: 10
     - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test
       if: runner.os == 'Linux'
     - run: pnpm run test

@@ -7,6 +7,12 @@ const { test, expect } = createFixture([
 ]);
 
 test("should installs add-ons with custom fixtures", async ({ page }) => {
+  await page.route("https://example.com/", (route) =>
+    route.fulfill({
+      contentType: "text/html",
+      body: "<!doctype html><html><body></body></html>",
+    }),
+  );
   await page.goto("https://example.com/");
 
   const magicNumber = await page.locator("#magic-number");

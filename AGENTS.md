@@ -14,8 +14,8 @@
 - Follow the existing TypeScript style and Biome configuration. Prefer clear names and small, focused changes over new abstractions.
 - For code changes, run `pnpm run lint`, `pnpm run build`, and the existing tests relevant to the changed behavior. Add regression coverage for behavior changes when appropriate; documentation-only changes do not require browser tests.
 - Browser setup: `pnpm exec playwright install chromium firefox`. Run browser tests in headed mode with a working display; Linux CI uses `xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test`.
-- Browser tests visit `https://example.com/`. Chromium extension tests require a headed persistent context; Firefox uses its remote debugging protocol. Keep these constraints in mind when changing launch behavior.
-- At the time this guide was added, `tests/firefox_extension_preferences.test.ts` contains a `test.only`. A default test run therefore does not establish full coverage. Run other relevant test files separately and report the actual test counts; do not add focused or skipped tests to make checks pass.
+- Browser tests intercept `https://example.com/` with deterministic HTML, so they do not require external website access. Chromium extension tests require a headed persistent context; Firefox uses its remote debugging protocol. Keep these constraints in mind when changing launch behavior.
+- Run the full Chromium and Firefox projects with `pnpm run test`. Focused tests are forbidden by both Biome and Playwright.
 - Distinguish passed, failed, skipped, and unrun checks. Report missing browser binaries, display support, or network access as validation limitations rather than claiming success.
 
 ## Commit messages: Conventional Commits and useful context

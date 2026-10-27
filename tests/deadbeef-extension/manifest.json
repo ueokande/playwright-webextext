@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "DEADBEEF",
   "version": "1.0.0",
   "content_scripts": [
@@ -8,5 +8,10 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "deadbeef-extension@playwright-webextext.test"
+    }
+  }
 }

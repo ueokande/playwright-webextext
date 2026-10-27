@@ -11,13 +11,22 @@ test("chromium installs extensions with custom browser type", async () => {
   const browser = await browserTypeWithExtension.launchPersistentContext("", {
     headless: false,
   });
+  try {
+    const page = await browser.newPage();
+    await page.route("https://example.com/", (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: "<!doctype html><html><body></body></html>",
+      }),
+    );
+    await page.goto("https://example.com/");
 
-  const page = await browser.newPage();
-  await page.goto("https://example.com/");
+    const magicNumber = await page.locator("#magic-number");
+    expect(await magicNumber.textContent()).toBe("42");
 
-  const magicNumber = await page.locator("#magic-number");
-  expect(await magicNumber.textContent()).toBe("42");
-
-  const deadbeef = await page.locator("#deadbeef-container");
-  expect(await deadbeef.textContent()).toBe("0xDEADBEEF");
+    const deadbeef = await page.locator("#deadbeef-container");
+    expect(await deadbeef.textContent()).toBe("0xDEADBEEF");
+  } finally {
+    await browser.close();
+  }
 });

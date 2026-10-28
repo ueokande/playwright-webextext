@@ -11,9 +11,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "playwright test --headed",
+    "test": "playwright test",
     "lint": "biome check .",
-    "lint:fix": "biome check --write ."
+    "lint:fix": "biome check --write .",
+    "e2e:prepare": "pnpm run build && pnpm pack --pack-destination e2e/.artifacts && node e2e/prepare.js",
+    "test:e2e": "node e2e/run.js"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.3",

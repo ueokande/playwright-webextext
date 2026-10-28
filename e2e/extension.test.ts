@@ -7,7 +7,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { createFixture, withExtension } from "../../dist";
+import { createFixture, withExtension } from "playwright-webextext";
 
 const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "peer-extensions-"));
 process.once("exit", () =>
@@ -25,7 +25,7 @@ const { version } = JSON.parse(
 const extensionPaths = ["magic-number-extension", "deadbeef-extension"].map(
   (name) => {
     const destination = path.join(temporaryDirectory, name);
-    cpSync(path.join(__dirname, "../../tests", name), destination, {
+    cpSync(path.join(__dirname, "extensions", name), destination, {
       recursive: true,
     });
     if (version === "1.12.0") {

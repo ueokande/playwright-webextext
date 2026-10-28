@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
   forbidOnly: true,
   reporter: "line",
   workers: 1,
-  outputDir: path.resolve(__dirname, "../../test-results/peer-compatibility"),
+  outputDir: path.resolve(__dirname, "test-results"),
   projects: [
     { name: "chromium", use: { browserName: "chromium" } },
     { name: "firefox", use: { browserName: "firefox" } },

@@ -7,3 +7,6 @@ yarn-error.log*
 /test-results/
 /playwright-report/
 /playwright-install.log
+
+/e2e/.artifacts/
+/e2e/.work/

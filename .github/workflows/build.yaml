@@ -23,25 +23,8 @@ jobs:
     - run: pnpm run build
 
   test:
-    name: Test (${{ matrix.os }}, ${{ matrix.peer }})
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - os: ubuntu
-          peer: '1.12.0'
-          container: mcr.microsoft.com/playwright:v1.12.0-focal
-        - os: ubuntu
-          peer: latest
-          container: ''
-        - os: macos
-          peer: latest
-          container: ''
-        - os: windows
-          peer: latest
-          container: ''
-    runs-on: ${{ matrix.os }}-latest
-    container: ${{ matrix.container }}
+    name: Unit tests
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -49,48 +32,17 @@ jobs:
         node-version-file: 'package.json'
     - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
     - run: pnpm install --frozen-lockfile
-    - name: Build package with the locked development toolchain
-      run: pnpm run build
-    - name: Install peer compatibility target
-      shell: bash
-      env:
-        PEER_TARGET: ${{ matrix.peer }}
-        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
-      run: pnpm add --save-dev --save-exact --ignore-scripts "playwright@$PEER_TARGET" "@playwright/test@$PEER_TARGET"
-    - name: Install browser system dependencies
-      if: runner.os == 'Linux' && matrix.peer == 'latest'
-      run: pnpm exec playwright install-deps chromium firefox
-    - name: Install Playwright browsers
-      if: matrix.peer == 'latest'
-      shell: bash
-      run: |
-        if pnpm exec playwright install chromium firefox > playwright-install.log 2>&1; then
-          cat playwright-install.log
-        else
-          cat playwright-install.log
-          while IFS= read -r line; do
-            line="${line//%/%25}"
-            line="${line//$'\r'/%0D}"
-            printf '::error::%s\n' "$line"
-          done < <(tail -n 30 playwright-install.log)
-          exit 1
-        fi
-      timeout-minutes: 10
-    - name: Test peer compatibility (Linux)
-      if: runner.os == 'Linux'
-      run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- node .github/scripts/test-peers.js
-    - name: Test peer compatibility (macOS and Windows)
-      if: runner.os != 'Linux'
-      run: node .github/scripts/test-peers.js
-    - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test
-      if: runner.os == 'Linux' && matrix.peer == 'latest'
     - run: pnpm run test
-      if: runner.os != 'Linux' && matrix.peer == 'latest'
+
+  e2e:
+    name: Package E2E
+    needs: [lint, test]
+    uses: ./.github/workflows/e2e.yaml
 
   publish:
     name: Publish to NPM
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [lint, test]
+    needs: [lint, test, e2e]
     permissions:
       contents: write
       pull-requests: write

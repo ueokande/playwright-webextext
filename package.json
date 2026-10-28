@@ -23,8 +23,8 @@
     "typescript": "7.0.2"
   },
   "peerDependencies": {
-    "@playwright/test": ">=1.0.0",
-    "playwright": ">=1.0.0"
+    "@playwright/test": "^1.12.0",
+    "playwright": "^1.12.0"
   },
   "peerDependenciesMeta": {
     "@playwright/test": {

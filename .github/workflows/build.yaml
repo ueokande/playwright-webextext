@@ -29,7 +29,7 @@ jobs:
       matrix:
         include:
         - os: ubuntu
-          peer: minimum
+          peer: '1.12.0'
           container: mcr.microsoft.com/playwright:v1.12.0-focal
         - os: ubuntu
           peer: latest
@@ -56,13 +56,7 @@ jobs:
       env:
         PEER_TARGET: ${{ matrix.peer }}
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
-      run: |
-        if [ "$PEER_TARGET" = minimum ]; then
-          peer_range=1.12.0
-        else
-          peer_range="$(node -p "require('./package.json').peerDependencies.playwright")"
-        fi
-        pnpm add --save-dev --save-exact --ignore-scripts "playwright@$peer_range" "@playwright/test@$peer_range"
+      run: pnpm add --save-dev --save-exact --ignore-scripts "playwright@$PEER_TARGET" "@playwright/test@$PEER_TARGET"
     - name: Install browser system dependencies
       if: runner.os == 'Linux' && matrix.peer == 'latest'
       run: pnpm exec playwright install-deps chromium firefox

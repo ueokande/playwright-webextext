@@ -28,7 +28,8 @@
         "noFocusedTests": "error"
       },
       "style": {
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "useNodejsImportProtocol": "error"
       }
     }
   }

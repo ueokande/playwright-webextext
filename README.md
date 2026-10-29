@@ -77,8 +77,10 @@ test("should launch browser with extensions", async ({ page }) => {
 
 ## Manifest v3 support
 
-The playwright-webextext does not fully support manifest v3 on Firefox.
-Firefox asks users to allow loading content scripts since Manifest v3.
+Firefox Manifest V3 extensions need host permission approval to run content
+scripts. playwright-webextext approves the declared content-script matches,
+`host_permissions`, `optional_host_permissions`, and `optional_permissions`
+automatically when the conditions below are met.
 
 ![Prompt to allow loading content scripts](./firefox_prompt.png)
 
@@ -100,7 +102,10 @@ the manifest.json:
 }
 ```
 
-and it's necessary to launch with persistent context, using `launchPersistentContext()`.
+and it's necessary to launch with persistent context, using `launchPersistentContext()`
+or `createFixture()`. Without an explicit Gecko ID or a persistent context,
+automatic permission approval is not supported. This does not enable automation
+of Firefox extension pages (`moz-extension://`); see [#86](https://github.com/ueokande/playwright-webextext/issues/86).
 
 [firefox_gecko_properties]: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/browser_specific_settings#firefox_gecko_properties
 

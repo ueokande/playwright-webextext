@@ -47,6 +47,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      id-token: write
     runs-on: ubuntu-latest
     steps:
     - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
@@ -62,13 +63,13 @@ jobs:
       with:
         node-version-file: 'package.json'
         cache: 'pnpm'
-        registry-url: 'https://registry.npmjs.org'
+      if: ${{ steps.release.outputs.release_created }}
+    - name: Install npm with Trusted Publishing support
+      run: npm install --global npm@11
       if: ${{ steps.release.outputs.release_created }}
     - run: pnpm install --frozen-lockfile
       if: ${{ steps.release.outputs.release_created }}
     - run: pnpm run build
       if: ${{ steps.release.outputs.release_created }}
-    - run: pnpm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - run: npm publish --provenance --access public
       if: ${{ steps.release.outputs.release_created }}

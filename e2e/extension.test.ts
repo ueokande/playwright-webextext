@@ -22,22 +22,24 @@ const { version } = JSON.parse(
     "utf8",
   ),
 );
-const extensionPaths = ["magic-number-extension", "deadbeef-extension"].map(
-  (name) => {
-    const destination = path.join(temporaryDirectory, name);
-    cpSync(path.join(__dirname, "extensions", name), destination, {
-      recursive: true,
-    });
-    if (version === "1.12.0") {
-      // The Firefox bundled with Playwright 1.12 predates Manifest V3 support.
-      const manifestPath = path.join(destination, "manifest.json");
-      const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-      manifest.manifest_version = 2;
-      writeFileSync(manifestPath, JSON.stringify(manifest));
-    }
-    return destination;
-  },
-);
+const extensionPaths = [
+  "magic-number-extension",
+  "deadbeef-extension",
+  "empty-extension",
+].map((name) => {
+  const destination = path.join(temporaryDirectory, name);
+  cpSync(path.join(__dirname, "extensions", name), destination, {
+    recursive: true,
+  });
+  if (version === "1.12.0") {
+    // The Firefox bundled with Playwright 1.12 predates Manifest V3 support.
+    const manifestPath = path.join(destination, "manifest.json");
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    manifest.manifest_version = 2;
+    writeFileSync(manifestPath, JSON.stringify(manifest));
+  }
+  return destination;
+});
 
 const { test, expect } = createFixture(extensionPaths);
 const html = "<!doctype html><html><body></body></html>";

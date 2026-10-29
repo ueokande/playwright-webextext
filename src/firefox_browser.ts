@@ -123,12 +123,16 @@ export class FirefoxWithExtension implements BrowserType {
       if (manifest.manifest_version !== 3) {
         continue;
       }
-      if (
-        (!(manifest.content_scripts instanceof Array) ||
-          manifest.content_scripts.length === 0) &&
-        !(manifest.optional_permissions instanceof Array) &&
-        manifest.optional_permissions.length === 0
-      ) {
+      const contentScripts = manifest.content_scripts ?? [];
+      const optionalPermissions = manifest.optional_permissions ?? [];
+      const origins = [
+        ...(manifest.host_permissions ?? []),
+        ...(manifest.optional_host_permissions ?? []),
+        ...contentScripts.flatMap(
+          (script: { matches?: string[] }) => script.matches ?? [],
+        ),
+      ];
+      if (origins.length === 0 && optionalPermissions.length === 0) {
         continue;
       }
 
@@ -140,20 +144,10 @@ export class FirefoxWithExtension implements BrowserType {
         continue;
       }
       await repo.patch((prefs) => {
-        for (const contentScript of manifest.content_scripts) {
-          const matches = contentScript.matches;
-          if (!(matches instanceof Array) || matches.length === 0) {
-            continue;
-          }
-          prefs.addOrigins(addonId, contentScript.matches);
-          if (matches.includes("<all_urls>")) {
-            prefs.addPermissions(addonId, ["<all_urls>"]);
-          }
-        }
-
-        prefs.addOrigins(addonId, manifest.content_scripts[0].matches);
-        if (manifest.optional_permissions) {
-          prefs.addPermissions(addonId, manifest.optional_permissions);
+        prefs.addOrigins(addonId, origins);
+        prefs.addPermissions(addonId, optionalPermissions);
+        if (origins.includes("<all_urls>")) {
+          prefs.addPermissions(addonId, ["<all_urls>"]);
         }
       });
     }

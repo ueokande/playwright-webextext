@@ -97,12 +97,16 @@ test("Firefox extensions run in private contexts when explicitly allowed", async
   });
   const context = await browserType.launchPersistentContext(
     testInfo.outputPath("private-profile"),
-    { headless: false },
+    {
+      headless: false,
+      firefoxUserPrefs: {
+        "browser.privatebrowsing.autostart": version === "1.12.0",
+      },
+    },
   );
   try {
-    const browser = context.browser();
-    if (!browser) throw new Error("Persistent context has no browser");
-    const privateContext = await browser.newContext();
+    // Playwright 1.12 does not expose a Browser for persistent contexts.
+    const privateContext = (await context.browser()?.newContext()) ?? context;
     try {
       const page = await privateContext.newPage();
       await page.route("https://example.com/", (route) =>
@@ -110,9 +114,12 @@ test("Firefox extensions run in private contexts when explicitly allowed", async
       );
       await page.goto("https://example.com/");
       expect(await page.textContent("#magic-number")).toBe("42");
+      expect(
+        await page.getAttribute("#magic-number", "data-private-browsing"),
+      ).toBe("true");
       expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
     } finally {
-      await privateContext.close();
+      if (privateContext !== context) await privateContext.close();
     }
   } finally {
     await context.close();

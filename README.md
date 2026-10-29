@@ -83,8 +83,10 @@ Private-window access is opt-in for the specified Firefox extensions:
 const browserType = withExtension(firefox, "path/to/your/extension", {
   allowPrivateBrowsing: true,
 });
-const context = await browserType.launchPersistentContext("path/to/profile");
-const privateContext = await context.browser()!.newContext();
+const context = await browserType.launchPersistentContext("path/to/profile", {
+  firefoxUserPrefs: { "browser.privatebrowsing.autostart": true },
+});
+// Use context.newPage() and close context when finished.
 ```
 
 Each extension must declare `browser_specific_settings.gecko.id`. Use a non-empty

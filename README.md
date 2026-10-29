@@ -112,7 +112,23 @@ The playwright introduces a way to install chrome extensions in the document.  C
 
 - [Chrome Extensions | Playwright](https://playwright.dev/docs/chrome-extensions)
 
-Note that using chrome extensions has two limitations: 1) the browser should run on headed mode, and 2) you should launch the browser with a persistent context (`launchPersistentContext()`).
+Chromium extensions require a persistent context (`launchPersistentContext()`).
+With current Playwright versions, use the bundled Chromium with `channel: "chromium"`
+to run extensions in headless mode. Google Chrome and Microsoft Edge no longer
+support the command-line flags used to side-load extensions.
+
+With `createFixture()`, configure the channel through Playwright's standard options:
+
+```typescript
+const { test, expect } = createFixture("path/to/your/extension");
+test.use({ headless: true, channel: "chromium" });
+```
+
+The fixture forwards `launchOptions` and honors the `channel` and `headless`
+options. Older Playwright versions, including the supported minimum 1.12.0,
+require headed mode (`headless: false`); the new Chromium headless mode was
+introduced later. Passing `--headless=new` with `headless: false` is also possible
+on Chromium versions that support that argument.
 
 [chrome-launch-switches]: https://sites.google.com/site/chromeappupdates/launch-switches
 

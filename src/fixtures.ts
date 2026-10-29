@@ -7,11 +7,18 @@ import { withExtension } from "./factory";
 export const createFixture = (extPaths: string | string[]) => {
   const test = base.extend<Record<never, never>>({
     browser: [
-      async ({ playwright, browserName }, use) => {
+      async (
+        { playwright, browserName, launchOptions, channel, headless },
+        use,
+      ) => {
         const browser = await withExtension(
           playwright[browserName],
           extPaths,
-        ).launch();
+        ).launch({
+          ...launchOptions,
+          channel: channel ?? launchOptions.channel,
+          headless,
+        });
         try {
           await use(browser);
         } finally {
@@ -21,10 +28,18 @@ export const createFixture = (extPaths: string | string[]) => {
       { scope: "worker", timeout: 0 },
     ],
     context: [
-      async ({ playwright, browserName, headless }, use) => {
-        if (browserName === "chromium" && headless) {
+      async (
+        { playwright, browserName, headless, channel, launchOptions },
+        use,
+      ) => {
+        const browserChannel = channel ?? launchOptions.channel;
+        if (
+          browserName === "chromium" &&
+          headless &&
+          browserChannel !== "chromium"
+        ) {
           throw new Error(
-            "launching chromium with extensions is only supported in headed browsers",
+            "Chromium extensions in headless mode require channel: 'chromium'; use headless: false for older Playwright versions",
           );
         }
         const userDataDir = await mkdtemp(
@@ -36,6 +51,8 @@ export const createFixture = (extPaths: string | string[]) => {
           const context = await browserType.launchPersistentContext(
             userDataDir,
             {
+              ...launchOptions,
+              channel: browserChannel,
               headless,
             },
           );

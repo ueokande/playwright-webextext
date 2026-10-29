@@ -86,3 +86,25 @@ test("createFixture installs both content scripts", async ({ page }) => {
   expect(await page.textContent("#magic-number")).toBe("42");
   expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
 });
+
+if (version !== "1.12.0") {
+  test.describe("headless Chromium", () => {
+    test.use({ headless: true, channel: "chromium" });
+    test.beforeEach(async ({ browserName }) => {
+      test.skip(
+        browserName !== "chromium",
+        "Chromium channel is browser-specific",
+      );
+    });
+    test("createFixture loads extensions without a display", async ({
+      page,
+    }) => {
+      await page.route("https://example.com/", (route) =>
+        route.fulfill({ contentType: "text/html", body: html }),
+      );
+      await page.goto("https://example.com/");
+      expect(await page.textContent("#magic-number")).toBe("42");
+      expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
+    });
+  });
+}

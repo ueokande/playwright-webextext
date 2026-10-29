@@ -7,7 +7,11 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { createFixture, withExtension } from "playwright-webextext";
+import {
+  createFixture,
+  getFirefoxExtensionUUID,
+  withExtension,
+} from "playwright-webextext";
 
 const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "peer-extensions-"));
 process.once("exit", () =>
@@ -66,6 +70,31 @@ test("withExtension installs both content scripts", async ({
     { headless: false },
   );
   try {
+    if (browserName === "firefox") {
+      const first = await getFirefoxExtensionUUID(
+        context,
+        "magic-number-extension@playwright-webextext.test",
+      );
+      const second = await getFirefoxExtensionUUID(
+        context,
+        "deadbeef-extension@playwright-webextext.test",
+      );
+      expect(first).toMatch(/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i);
+      expect(second).not.toBe(first);
+      expect(
+        await getFirefoxExtensionUUID(
+          context,
+          "magic-number-extension@playwright-webextext.test",
+        ),
+      ).toBe(first);
+      await expect(
+        getFirefoxExtensionUUID(context, "missing@example.test"),
+      ).rejects.toThrow("does not have your extension installed");
+    } else {
+      await expect(
+        getFirefoxExtensionUUID(context, "missing@example.test"),
+      ).rejects.toThrow("Expected a Firefox");
+    }
     const page = await context.newPage();
     await page.route("https://example.com/", (route) =>
       route.fulfill({ contentType: "text/html", body: html }),
@@ -78,7 +107,19 @@ test("withExtension installs both content scripts", async ({
   }
 });
 
-test("createFixture installs both content scripts", async ({ page }) => {
+test("createFixture installs both content scripts", async ({
+  page,
+  context,
+  browserName,
+}) => {
+  if (browserName === "firefox") {
+    expect(
+      await getFirefoxExtensionUUID(
+        context,
+        "magic-number-extension@playwright-webextext.test",
+      ),
+    ).toMatch(/^[0-9a-f-]{36}$/i);
+  }
   await page.route("https://example.com/", (route) =>
     route.fulfill({ contentType: "text/html", body: html }),
   );

@@ -55,6 +55,8 @@ test("browser metadata is delegated to the original browser", async ({
 test("withExtension installs both content scripts", async ({
   playwright,
   browserName,
+  headless,
+  channel,
 }, testInfo) => {
   const browserType = withExtension(playwright[browserName], extensionPaths);
   expect(browserType.name()).toBe(browserName);
@@ -63,7 +65,7 @@ test("withExtension installs both content scripts", async ({
   );
   const context = await browserType.launchPersistentContext(
     testInfo.outputPath("profile"),
-    { headless: false },
+    { headless, channel },
   );
   try {
     const page = await context.newPage();
@@ -86,25 +88,3 @@ test("createFixture installs both content scripts", async ({ page }) => {
   expect(await page.textContent("#magic-number")).toBe("42");
   expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
 });
-
-if (version !== "1.12.0") {
-  test.describe("headless Chromium", () => {
-    test.use({ headless: true, channel: "chromium" });
-    test.beforeEach(async ({ browserName }) => {
-      test.skip(
-        browserName !== "chromium",
-        "Chromium channel is browser-specific",
-      );
-    });
-    test("createFixture loads extensions without a display", async ({
-      page,
-    }) => {
-      await page.route("https://example.com/", (route) =>
-        route.fulfill({ contentType: "text/html", body: html }),
-      );
-      await page.goto("https://example.com/");
-      expect(await page.textContent("#magic-number")).toBe("42");
-      expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
-    });
-  });
-}

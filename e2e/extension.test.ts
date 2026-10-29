@@ -86,3 +86,35 @@ test("createFixture installs both content scripts", async ({ page }) => {
   expect(await page.textContent("#magic-number")).toBe("42");
   expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
 });
+
+test("Firefox extensions run in private contexts when explicitly allowed", async ({
+  playwright,
+  browserName,
+}, testInfo) => {
+  test.skip(browserName !== "firefox", "Firefox private-browsing permissions");
+  const browserType = withExtension(playwright.firefox, extensionPaths, {
+    allowPrivateBrowsing: true,
+  });
+  const context = await browserType.launchPersistentContext(
+    testInfo.outputPath("private-profile"),
+    { headless: false },
+  );
+  try {
+    const browser = context.browser();
+    if (!browser) throw new Error("Persistent context has no browser");
+    const privateContext = await browser.newContext();
+    try {
+      const page = await privateContext.newPage();
+      await page.route("https://example.com/", (route) =>
+        route.fulfill({ contentType: "text/html", body: html }),
+      );
+      await page.goto("https://example.com/");
+      expect(await page.textContent("#magic-number")).toBe("42");
+      expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
+    } finally {
+      await privateContext.close();
+    }
+  } finally {
+    await context.close();
+  }
+});

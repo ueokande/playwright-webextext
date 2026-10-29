@@ -7,6 +7,7 @@ import type {
   BrowserType,
   LaunchOptions,
 } from "playwright";
+import type { WithExtensionOptions } from "./factory";
 import { FirefoxAddonInstaller } from "./firefox_addon_installer";
 import { FirefoxExtensionPreferenceRepository } from "./firefox_extension_preferences";
 import { FirefoxOverrides } from "./firefox_overrides";
@@ -28,6 +29,7 @@ export class FirefoxWithExtension implements BrowserType {
     private readonly browserType: BrowserType,
     addonPaths: string | string[],
     defaultDebuggingServerPort: number | PortFn = findFreeTcpPort,
+    private readonly extensionOptions: WithExtensionOptions = {},
   ) {
     if (browserType.name() !== "firefox") {
       throw new Error(`unexpected browser: ${browserType.name()}`);
@@ -52,6 +54,11 @@ export class FirefoxWithExtension implements BrowserType {
   name;
 
   async launch(options: LaunchOptions = {}): Promise<Browser> {
+    if (this.extensionOptions.allowPrivateBrowsing) {
+      throw new Error(
+        "allowPrivateBrowsing requires launchPersistentContext() with a non-empty userDataDir",
+      );
+    }
     const overrides = new FirefoxOverrides(await this.getDefaultPort());
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
     const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
@@ -71,6 +78,15 @@ export class FirefoxWithExtension implements BrowserType {
     const overrides = new FirefoxOverrides(await this.getDefaultPort());
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
     const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
+
+    if (this.extensionOptions.allowPrivateBrowsing) {
+      if (!userDataDir) {
+        throw new Error(
+          "allowPrivateBrowsing requires a non-empty userDataDir",
+        );
+      }
+      await this.allowPrivateBrowsing(userDataDir);
+    }
 
     // patch extension preferences before launch
     await this.overridePermissions(userDataDir);
@@ -93,6 +109,11 @@ export class FirefoxWithExtension implements BrowserType {
   async launchServer(
     options: LaunchServerOptions = {},
   ): Promise<BrowserServer> {
+    if (this.extensionOptions.allowPrivateBrowsing) {
+      throw new Error(
+        "allowPrivateBrowsing requires launchPersistentContext() with a non-empty userDataDir",
+      );
+    }
     const overrides = new FirefoxOverrides(await this.getDefaultPort());
     const { args, port } = overrides.debuggingServerPortArgs(options.args);
     const firefoxUserPrefs = overrides.userPrefs(options.firefoxUserPrefs);
@@ -155,6 +176,29 @@ export class FirefoxWithExtension implements BrowserType {
         if (manifest.optional_permissions) {
           prefs.addPermissions(addonId, manifest.optional_permissions);
         }
+      });
+    }
+  }
+
+  private async allowPrivateBrowsing(userDataDir: string): Promise<void> {
+    const repo = new FirefoxExtensionPreferenceRepository(userDataDir);
+    for (const addonPath of this.addonPaths) {
+      const manifest = JSON.parse(
+        await fs.readFile(path.join(addonPath, "manifest.json"), "utf8"),
+      );
+      if (manifest.incognito === "not_allowed") {
+        throw new Error(
+          `Addon ${addonPath} forbids private browsing in its manifest`,
+        );
+      }
+      const addonId = manifest.browser_specific_settings?.gecko?.id;
+      if (!addonId) {
+        throw new Error(
+          `Addon ${addonPath} requires browser_specific_settings.gecko.id for private browsing`,
+        );
+      }
+      await repo.patch((prefs) => {
+        prefs.addPermissions(addonId, ["internal:privateBrowsingAllowed"]);
       });
     }
   }

@@ -75,6 +75,29 @@ test("should launch browser with extensions", async ({ page }) => {
 });
 ```
 
+## Firefox private browsing
+
+Private-window access is opt-in for the specified Firefox extensions:
+
+```typescript
+const browserType = withExtension(firefox, "path/to/your/extension", {
+  allowPrivateBrowsing: true,
+});
+const context = await browserType.launchPersistentContext("path/to/profile");
+const privateContext = await context.browser()!.newContext();
+```
+
+Each extension must declare `browser_specific_settings.gecko.id`. Use a non-empty
+persistent profile directory; `launch()` and `launchServer()` cannot preconfigure
+this permission. Extensions declaring `incognito: "not_allowed"` are rejected.
+The permission is stored in that profile and remains enabled when it is reused;
+omitting the option does not revoke existing grants. This option applies only to
+Firefox. Chromium incognito permission configuration is not supported.
+
+`createFixture(extensionPaths, { allowPrivateBrowsing: true })` also accepts this
+option for Firefox projects. Use its `context`/`page` fixtures; the `browser`
+fixture uses `launch()` and cannot enable private-window access.
+
 ## Manifest v3 support
 
 The playwright-webextext does not fully support manifest v3 on Firefox.

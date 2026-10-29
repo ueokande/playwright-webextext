@@ -14,7 +14,7 @@
     "test": "playwright test",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "e2e:prepare": "pnpm run build && pnpm pack --pack-destination e2e/.artifacts && node e2e/prepare.js"
+    "e2e:prepare": "pnpm run build && pnpm pack --pack-destination e2e/.artifacts && node scripts/prepare-e2e.js"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.3",

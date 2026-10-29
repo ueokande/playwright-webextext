@@ -44,13 +44,15 @@ jobs:
     - name: Install the packed library and peer target
       working-directory: ${{ steps.prepare.outputs.workspace }}
       shell: bash
-      run: pnpm add --save-exact --ignore-scripts ./package.tgz "playwright@$PEER_TARGET" "@playwright/test@$PEER_TARGET"
+      run: pnpm add --save-exact --ignore-scripts "playwright@$PEER_TARGET" "@playwright/test@$PEER_TARGET"
     - name: Install browser system dependencies
       if: runner.os == 'Linux' && matrix.peer == 'latest'
-      run: node e2e/run.js install-deps chromium firefox
+      working-directory: ${{ steps.prepare.outputs.workspace }}
+      run: pnpm exec playwright install-deps chromium firefox
     - name: Install browsers for the peer target
       if: matrix.peer == 'latest'
-      run: node e2e/run.js install chromium firefox
+      working-directory: ${{ steps.prepare.outputs.workspace }}
+      run: pnpm exec playwright install chromium firefox
       timeout-minutes: 10
     - name: Prepare the historical Firefox display environment
       if: matrix.peer == '1.12.0'
@@ -63,7 +65,9 @@ jobs:
         fi
     - name: Run package E2E (Linux)
       if: runner.os == 'Linux'
-      run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test:e2e
+      working-directory: ${{ steps.prepare.outputs.workspace }}
+      run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run ${{ matrix.peer == '1.12.0' && 'test:legacy' || 'test' }}
     - name: Run package E2E (macOS and Windows)
       if: runner.os != 'Linux'
-      run: pnpm run test:e2e
+      working-directory: ${{ steps.prepare.outputs.workspace }}
+      run: pnpm test

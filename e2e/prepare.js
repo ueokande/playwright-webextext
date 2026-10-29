@@ -12,12 +12,12 @@ fs.accessSync(archive);
 const workspace = fs.mkdtempSync(
   path.join(os.tmpdir(), "playwright-webextext-e2e-"),
 );
-fs.writeFileSync(
-  path.join(workspace, "package.json"),
-  JSON.stringify({ name: "playwright-webextext-e2e-consumer", private: true }),
-);
 fs.copyFileSync(archive, path.join(workspace, "package.tgz"));
-for (const file of ["playwright.config.ts", "extension.test.ts"]) {
+for (const file of [
+  "package.json",
+  "playwright.config.ts",
+  "extension.test.ts",
+]) {
   fs.copyFileSync(path.join(__dirname, file), path.join(workspace, file));
 }
 fs.cpSync(

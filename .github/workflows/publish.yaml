@@ -1,0 +1,66 @@
+name: Publish
+
+on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
+    branches: [master]
+
+permissions: {}
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Create release
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'master' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+    - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+      id: release
+      with:
+        target-branch: master
+        config-file: release-please-config.json
+        manifest-file: .release-please-manifest.json
+
+  publish:
+    name: Publish to npm
+    needs: release
+    if: needs.release.outputs.release_created == 'true'
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: ${{ needs.release.outputs.tag_name }}
+        persist-credentials: false
+    - name: Verify the release commit passed CI
+      env:
+        TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
+      run: test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+    - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: 'package.json'
+    - name: Install npm with Trusted Publishing support
+      run: npm install --global --ignore-scripts npm@11
+    - run: pnpm install --frozen-lockfile --ignore-scripts
+    - run: pnpm run build
+    - run: npm publish --provenance --access public --ignore-scripts

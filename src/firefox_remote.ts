@@ -2,14 +2,13 @@
 // https://github.com/mozilla/web-ext/blob/7.1.1/src/firefox/remote.js
 
 import * as net from "node:net";
-import FirefoxRDPClient, {
-  connectToFirefox as defaultFirefoxConnector,
-} from "./firefox_rdpclient";
+import type FirefoxRDPClient from "./firefox_rdpclient";
+import { connectToFirefox as defaultFirefoxConnector } from "./firefox_rdpclient";
 import type {
   FirefoxRDPAddonActor,
+  InstallTemporaryAddonResponse,
   RDPRequestType,
   RDPResponseMap,
-  InstallTemporaryAddonResponse,
 } from "./firefox_types";
 
 export function isErrorWithCode(
@@ -200,7 +199,7 @@ export async function connectWithMaxRetries(
   { connectToFirefox = connect }: ConnectWithMaxRetriesDeps = {},
 ): Promise<RemoteFirefox> {
   async function establishConnection() {
-    let lastError;
+    let lastError: unknown;
 
     for (let retries = 0; retries <= maxRetries; retries++) {
       try {

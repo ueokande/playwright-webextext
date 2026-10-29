@@ -1,16 +1,16 @@
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import type {
   Browser,
   BrowserContext,
-  BrowserType,
   BrowserServer,
+  BrowserType,
   LaunchOptions,
-} from "playwright-core";
-import { FirefoxOverrides } from "./firefox_overrides";
+} from "playwright";
 import { FirefoxAddonInstaller } from "./firefox_addon_installer";
 import { FirefoxExtensionPreferenceRepository } from "./firefox_extension_preferences";
+import { FirefoxOverrides } from "./firefox_overrides";
 import { findFreeTcpPort } from "./firefox_remote";
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
 
 type LaunchServerOptions = Parameters<BrowserType["launchServer"]>[0];
 type LaunchPersistentContextOptions = Parameters<
@@ -40,10 +40,10 @@ export class FirefoxWithExtension implements BrowserType {
       this.addonPaths = addonPaths;
     }
 
-    this.connectOverCDP = browserType.connectOverCDP;
-    this.connect = browserType.connect;
-    this.executablePath = browserType.executablePath;
-    this.name = browserType.name;
+    this.connectOverCDP = browserType.connectOverCDP.bind(browserType);
+    this.connect = browserType.connect.bind(browserType);
+    this.executablePath = browserType.executablePath.bind(browserType);
+    this.name = browserType.name.bind(browserType);
   }
 
   connectOverCDP;
@@ -74,6 +74,9 @@ export class FirefoxWithExtension implements BrowserType {
 
     // patch extension preferences before launch
     await this.overridePermissions(userDataDir);
+    if (userDataDir) {
+      await this.writeUserPrefs(userDataDir, firefoxUserPrefs);
+    }
 
     const browser = await this.browserType.launchPersistentContext(
       userDataDir,
@@ -154,6 +157,31 @@ export class FirefoxWithExtension implements BrowserType {
         }
       });
     }
+  }
+
+  private async writeUserPrefs(
+    userDataDir: string,
+    prefs: NonNullable<LaunchOptions["firefoxUserPrefs"]>,
+  ): Promise<void> {
+    // Older Playwright drivers ignore firefoxUserPrefs for persistent contexts.
+    await fs.mkdir(userDataDir, { recursive: true });
+    const file = path.join(userDataDir, "user.js");
+    const previous = await fs.readFile(file, "utf8").catch((error) => {
+      if (error.code === "ENOENT") return "";
+      throw error;
+    });
+    const preserved = previous.replace(
+      /\n\/\/ playwright-webextext preferences begin\n[\s\S]*?\n\/\/ playwright-webextext preferences end\n/g,
+      "",
+    );
+    const lines = Object.entries(prefs).map(
+      ([key, value]) =>
+        `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`,
+    );
+    await fs.writeFile(
+      file,
+      `${preserved}\n// playwright-webextext preferences begin\n${lines.join("\n")}\n// playwright-webextext preferences end\n`,
+    );
   }
 
   private async getDefaultPort(): Promise<number> {

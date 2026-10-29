@@ -3,3 +3,10 @@ yarn-error.log*
 /node_modules/
 
 /dist/
+
+/test-results/
+/playwright-report/
+/playwright-install.log
+
+/e2e/.artifacts/
+/e2e/.work/

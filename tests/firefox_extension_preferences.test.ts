@@ -1,11 +1,11 @@
-import { test, expect } from "@playwright/test";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { expect, test } from "@playwright/test";
 import {
-  FirefoxExtensionPreferencesBuilder,
   FirefoxExtensionPreferenceRepository,
+  FirefoxExtensionPreferencesBuilder,
 } from "../src/firefox_extension_preferences";
-import fs from "fs/promises";
-import path from "path";
-import os from "os";
 
 test.describe("FirefoxExtensionPreferencesBuilder", () => {
   test.describe("new", () => {
@@ -87,7 +87,7 @@ test.describe("FirefoxExtensionPreferencesRepository", () => {
     await fs.rm(tmpdir, { recursive: true });
   });
 
-  test.only("should create a new preferences", async () => {
+  test("should create a new preferences", async () => {
     const repo = new FirefoxExtensionPreferenceRepository(userDataDir);
     await repo.patch((b) => {
       b.addPermissions("addon@id", ["clipboardRead"]);

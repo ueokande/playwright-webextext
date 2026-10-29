@@ -1,13 +1,13 @@
 // This is TypeScript version of the following
 // https://github.com/mozilla/web-ext/blob/master/src/firefox/rdp-client.js
 
+import * as domain from "node:domain";
+import { EventEmitter } from "node:events";
 import * as net from "node:net";
-import { EventEmitter } from "events";
-import * as domain from "domain";
 import type {
-  RDPRequestType,
   RDPRequest,
   RDPRequestMap,
+  RDPRequestType,
   RDPResponseMap,
 } from "./firefox_types";
 

@@ -3,19 +3,19 @@
 ## Project and scope
 
 - This TypeScript library loads local WebExtensions into Playwright Chromium and Firefox browsers. Its public entry points are `withExtension` and `createFixture` in `src/index.ts`.
-- Browser adapters, launch overrides, and Firefox add-on installation live in `src/`. Tests and example extensions live in `tests/`; compiled output is generated in `dist/`.
+- Browser adapters, launch overrides, and Firefox add-on installation live in `src/`. Unit tests live in `tests/`; package E2E tests and example extensions live in `e2e/`; compiled output is generated in `dist/`.
 - Read the relevant implementation, tests, and README before changing behavior. Preserve public API compatibility unless a breaking change is requested.
 - Keep changes focused on the requested task. Preserve existing user changes and avoid unrelated refactoring, formatting, or dependency upgrades.
 - Use the existing checkout; do not create a Git worktree unless requested. Never edit generated files in `dist/` or dependencies in `node_modules/`.
 
 ## Development and validation
 
-- Use Node.js >=20 and the pinned package manager, pnpm 8.14.1. Install with `pnpm install --frozen-lockfile`; do not regenerate the lockfile unless dependency changes are needed.
-- Follow the existing TypeScript style and ESLint/Prettier configuration. Prefer clear names and small, focused changes over new abstractions.
+- Use the Node.js version range declared in `package.json` (`engines.node`) and the pinned package manager, pnpm 12.15.0. GitHub Actions reads its Node.js version from the same file. Install with `pnpm install --frozen-lockfile`; do not regenerate the lockfile unless dependency changes are needed.
+- Follow the existing TypeScript style and Biome configuration. Prefer clear names and small, focused changes over new abstractions.
 - For code changes, run `pnpm run lint`, `pnpm run build`, and the existing tests relevant to the changed behavior. Add regression coverage for behavior changes when appropriate; documentation-only changes do not require browser tests.
-- Browser setup: `pnpm exec playwright install chromium firefox`. Run browser tests in headed mode with a working display; Linux CI uses `xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test`.
-- Browser tests visit `https://example.com/`. Chromium extension tests require a headed persistent context; Firefox uses its remote debugging protocol. Keep these constraints in mind when changing launch behavior.
-- At the time this guide was added, `tests/firefox_extension_preferences.test.ts` contains a `test.only`. A default test run therefore does not establish full coverage. Run other relevant test files separately and report the actual test counts; do not add focused or skipped tests to make checks pass.
+- `pnpm run test` runs the browser-free unit suite. For packaged browser tests, follow `e2e/README.md`; Linux needs a working display such as Xvfb.
+- Browser tests intercept `https://example.com/` with deterministic HTML, so they do not require external website access. Chromium extension tests require a headed persistent context; Firefox uses its remote debugging protocol. Keep these constraints in mind when changing launch behavior.
+- Run the Chromium and Firefox E2E projects with `pnpm --dir "$consumer" test` (`test:legacy` for 1.12.0) after preparing and installing the isolated consumer. Focused tests are forbidden by both Biome and Playwright.
 - Distinguish passed, failed, skipped, and unrun checks. Report missing browser binaries, display support, or network access as validation limitations rather than claiming success.
 
 ## Commit messages: Conventional Commits and useful context

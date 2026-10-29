@@ -87,7 +87,7 @@ test("createFixture installs both content scripts", async ({ page }) => {
   expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
 });
 
-test("Firefox extensions run in private contexts when explicitly allowed", async ({
+test("Firefox extensions run in private browsing when explicitly allowed", async ({
   playwright,
   browserName,
 }, testInfo) => {
@@ -99,28 +99,20 @@ test("Firefox extensions run in private contexts when explicitly allowed", async
     testInfo.outputPath("private-profile"),
     {
       headless: false,
-      firefoxUserPrefs: {
-        "browser.privatebrowsing.autostart": version === "1.12.0",
-      },
+      firefoxUserPrefs: { "browser.privatebrowsing.autostart": true },
     },
   );
   try {
-    // Playwright 1.12 does not expose a Browser for persistent contexts.
-    const privateContext = (await context.browser()?.newContext()) ?? context;
-    try {
-      const page = await privateContext.newPage();
-      await page.route("https://example.com/", (route) =>
-        route.fulfill({ contentType: "text/html", body: html }),
-      );
-      await page.goto("https://example.com/");
-      expect(await page.textContent("#magic-number")).toBe("42");
-      expect(
-        await page.getAttribute("#magic-number", "data-private-browsing"),
-      ).toBe("true");
-      expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
-    } finally {
-      if (privateContext !== context) await privateContext.close();
-    }
+    const page = await context.newPage();
+    await page.route("https://example.com/", (route) =>
+      route.fulfill({ contentType: "text/html", body: html }),
+    );
+    await page.goto("https://example.com/");
+    expect(await page.textContent("#magic-number")).toBe("42");
+    expect(
+      await page.getAttribute("#magic-number", "data-private-browsing"),
+    ).toBe("true");
+    expect(await page.textContent("#deadbeef-container")).toBe("0xDEADBEEF");
   } finally {
     await context.close();
   }

@@ -89,6 +89,9 @@ const context = await browserType.launchPersistentContext("path/to/profile", {
 // Use context.newPage() and close context when finished.
 ```
 
+The Firefox preference starts the browser in private mode. Creating an isolated
+Playwright context alone does not enable Firefox private browsing.
+
 Each extension must declare `browser_specific_settings.gecko.id`. Use a non-empty
 persistent profile directory; `launch()` and `launchServer()` cannot preconfigure
 this permission. Extensions declaring `incognito: "not_allowed"` are rejected.

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.0](https://github.com/ueokande/playwright-webextext/compare/v0.0.5...v0.1.0) (2026-10-30)
+
+
+### Features
+
+* **chrome:** Support Chromium extensions in headless mode with E2E tests ([#374](https://github.com/ueokande/playwright-webextext/issues/374)) ([e84ae86](https://github.com/ueokande/playwright-webextext/commit/e84ae869db3d5b1862525a547bcf4ff6bdcb8772))
+* **firefox:** Enhance Firefox private browsing support and testing ([#375](https://github.com/ueokande/playwright-webextext/issues/375)) ([e494b7e](https://github.com/ueokande/playwright-webextext/commit/e494b7e03f0b2faddfd5ccb4bef824baea1b913b))
+* **firefox:** expose installed extension UUID lookup ([#372](https://github.com/ueokande/playwright-webextext/issues/372)) ([79089f2](https://github.com/ueokande/playwright-webextext/commit/79089f2f4626af6fce266785d1a463c29cd09fd0))
+
+
+### Bug Fixes
+
+* Migrate to Biome for linting, upgrade Node.js and Playwright ([#369](https://github.com/ueokande/playwright-webextext/issues/369)) ([571fa19](https://github.com/ueokande/playwright-webextext/commit/571fa193d68ca80d78dc2b82c1db218db5d1e585))
+
 ## [0.0.5](https://github.com/ueokande/playwright-webextext/compare/v0.0.4...v0.0.5) (2026-02-21)
 
 

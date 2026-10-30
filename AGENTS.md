@@ -14,8 +14,8 @@
 - Follow the existing TypeScript style and Biome configuration. Prefer clear names and small, focused changes over new abstractions.
 - For code changes, run `pnpm run lint`, `pnpm run build`, and the existing tests relevant to the changed behavior. Add regression coverage for behavior changes when appropriate; documentation-only changes do not require browser tests.
 - `pnpm run test` runs the browser-free unit suite. For packaged browser tests, follow `e2e/README.md`; Linux needs a working display such as Xvfb.
-- Browser tests intercept `https://example.com/` with deterministic HTML, so they do not require external website access. Chromium extension tests require a headed persistent context; Firefox uses its remote debugging protocol. Keep these constraints in mind when changing launch behavior.
-- Run the Chromium and Firefox E2E projects with `pnpm --dir "$consumer" test` (`test:legacy` for 1.12.0) after preparing and installing the isolated consumer. Focused tests are forbidden by both Biome and Playwright.
+- Browser tests intercept `https://example.com/` with deterministic HTML, so they do not require external website access. Chromium extension tests require a persistent context (headed for legacy Playwright, or the Chromium channel for modern headless mode); Firefox uses its remote debugging protocol. Keep these constraints in mind when changing launch behavior.
+- Run the Chromium and Firefox E2E projects with `npm test` inside the isolated peer consumer after following `e2e/README.md`. Focused tests are forbidden by both Biome and Playwright.
 - Distinguish passed, failed, skipped, and unrun checks. Report missing browser binaries, display support, or network access as validation limitations rather than claiming success.
 
 ## Commit messages: Conventional Commits and useful context

@@ -59,6 +59,8 @@ test("browser metadata is delegated to the original browser", async ({
 test("withExtension installs both content scripts", async ({
   playwright,
   browserName,
+  headless,
+  channel,
 }, testInfo) => {
   const browserType = withExtension(playwright[browserName], extensionPaths);
   expect(browserType.name()).toBe(browserName);
@@ -67,7 +69,7 @@ test("withExtension installs both content scripts", async ({
   );
   const context = await browserType.launchPersistentContext(
     testInfo.outputPath("profile"),
-    { headless: false },
+    { headless, channel },
   );
   try {
     if (browserName === "firefox") {

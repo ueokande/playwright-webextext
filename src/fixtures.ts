@@ -1,21 +1,29 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { test as base, expect } from "@playwright/test";
 import { type WithExtensionOptions, withExtension } from "./factory";
 
 export const createFixture = (
   extPaths: string | string[],
   options: WithExtensionOptions = {},
 ) => {
+  const { test: base, expect } =
+    require("@playwright/test") as typeof import("@playwright/test");
   const test = base.extend<Record<never, never>>({
     browser: [
-      async ({ playwright, browserName }, use) => {
+      async (
+        { playwright, browserName, launchOptions, channel, headless },
+        use,
+      ) => {
         const browser = await withExtension(
           playwright[browserName],
           extPaths,
           options,
-        ).launch();
+        ).launch({
+          ...launchOptions,
+          channel: channel ?? launchOptions.channel,
+          headless,
+        });
         try {
           await use(browser);
         } finally {
@@ -25,10 +33,18 @@ export const createFixture = (
       { scope: "worker", timeout: 0 },
     ],
     context: [
-      async ({ playwright, browserName, headless }, use) => {
-        if (browserName === "chromium" && headless) {
+      async (
+        { playwright, browserName, headless, channel, launchOptions },
+        use,
+      ) => {
+        const browserChannel = channel ?? launchOptions.channel;
+        if (
+          browserName === "chromium" &&
+          headless &&
+          browserChannel !== "chromium"
+        ) {
           throw new Error(
-            "launching chromium with extensions is only supported in headed browsers",
+            "Chromium extensions in headless mode require channel: 'chromium'; use headless: false for older Playwright versions",
           );
         }
         const userDataDir = await mkdtemp(
@@ -44,6 +60,8 @@ export const createFixture = (
           const context = await browserType.launchPersistentContext(
             userDataDir,
             {
+              ...launchOptions,
+              channel: browserChannel,
               headless,
             },
           );

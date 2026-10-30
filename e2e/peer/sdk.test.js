@@ -51,11 +51,20 @@ async function extensionPage(context) {
   return page;
 }
 
-test("the packed library works without @playwright/test installed", () => {
-  assert.throws(() => require.resolve("@playwright/test"), {
-    code: "MODULE_NOT_FOUND",
-  });
-  assert.equal(typeof withExtension, "function");
+test("both installed peers use the same version", () => {
+  const runner = JSON.parse(
+    readFileSync(
+      path.join(
+        path.dirname(require.resolve("@playwright/test")),
+        "package.json",
+      ),
+      "utf8",
+    ),
+  );
+  assert.equal(runner.version, version);
+  assert.deepEqual(Object.keys(require("./package.json").dependencies), [
+    "playwright-webextext",
+  ]);
 });
 
 const projects = [

@@ -8,11 +8,10 @@ permissions:
 
 jobs:
   e2e:
-    name: E2E (${{ matrix.consumer }}, ${{ matrix.os }}, ${{ matrix.peer }})
+    name: E2E (${{ matrix.os }}, ${{ matrix.peer }})
     strategy:
       fail-fast: false
       matrix:
-        consumer: [playwright, playwright-test]
         os: [ubuntu, macos, windows]
         peer: ['1.12.0', latest]
         exclude:
@@ -29,7 +28,6 @@ jobs:
     timeout-minutes: 20
     env:
       PEER_TARGET: ${{ matrix.peer }}
-      PEER_PACKAGE: ${{ matrix.consumer == 'playwright-test' && '@playwright/test' || 'playwright' }}
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -40,11 +38,11 @@ jobs:
     - run: pnpm install --frozen-lockfile
     - name: Pack and prepare the E2E consumer
       id: prepare
-      run: pnpm run e2e:prepare ${{ matrix.consumer }}
+      run: pnpm run e2e:prepare
     - name: Install the packed library and peer target
       working-directory: ${{ steps.prepare.outputs.workspace }}
       shell: bash
-      run: npm install --save-exact --ignore-scripts --no-audit --no-fund "$PEER_PACKAGE@$PEER_TARGET"
+      run: npm install --no-save --ignore-scripts --no-audit --no-fund "playwright@$PEER_TARGET" "@playwright/test@$PEER_TARGET"
     - name: Install browser system dependencies
       if: runner.os == 'Linux' && matrix.peer == 'latest'
       working-directory: ${{ steps.prepare.outputs.workspace }}

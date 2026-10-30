@@ -4,10 +4,6 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const e2e = path.join(root, "e2e");
-const consumer = process.argv[2];
-if (consumer !== "playwright" && consumer !== "playwright-test") {
-  throw new Error("Usage: pnpm run e2e:prepare <playwright|playwright-test>");
-}
 const manifest = JSON.parse(
   fs.readFileSync(path.join(root, "package.json"), "utf8"),
 );
@@ -18,12 +14,12 @@ const workspace = fs.mkdtempSync(
   path.join(os.tmpdir(), "playwright-webextext-e2e-"),
 );
 fs.copyFileSync(archive, path.join(workspace, "package.tgz"));
-fs.cpSync(path.join(e2e, consumer), workspace, { recursive: true });
+fs.cpSync(path.join(e2e, "peer"), workspace, { recursive: true });
 fs.cpSync(path.join(e2e, "extensions"), path.join(workspace, "extensions"), {
   recursive: true,
 });
 fs.mkdirSync(path.join(e2e, ".work"), { recursive: true });
-fs.writeFileSync(path.join(e2e, ".work", `${consumer}-path`), workspace);
+fs.writeFileSync(path.join(e2e, ".work", "consumer-path"), workspace);
 if (process.env.GITHUB_OUTPUT)
   fs.appendFileSync(process.env.GITHUB_OUTPUT, `workspace=${workspace}\n`);
 console.log(`Prepared isolated E2E consumer: ${workspace}`);

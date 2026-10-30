@@ -1,0 +1,10 @@
+{
+  "name": "playwright-webextext-e2e-peer",
+  "private": true,
+  "scripts": {
+    "test": "node --test sdk.test.js && playwright test --config=playwright.config.ts"
+  },
+  "dependencies": {
+    "playwright-webextext": "file:./package.tgz"
+  }
+}

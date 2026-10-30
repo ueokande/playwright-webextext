@@ -2,9 +2,12 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test as base, expect } from "@playwright/test";
-import { withExtension } from "./factory";
+import { type WithExtensionOptions, withExtension } from "./factory";
 
-export const createFixture = (extPaths: string | string[]) => {
+export const createFixture = (
+  extPaths: string | string[],
+  options: WithExtensionOptions = {},
+) => {
   const test = base.extend<Record<never, never>>({
     browser: [
       async (
@@ -14,6 +17,7 @@ export const createFixture = (extPaths: string | string[]) => {
         const browser = await withExtension(
           playwright[browserName],
           extPaths,
+          options,
         ).launch({
           ...launchOptions,
           channel: channel ?? launchOptions.channel,
@@ -46,7 +50,11 @@ export const createFixture = (extPaths: string | string[]) => {
           join(tmpdir(), "playwright-webextext-"),
         );
         try {
-          const browserType = withExtension(playwright[browserName], extPaths);
+          const browserType = withExtension(
+            playwright[browserName],
+            extPaths,
+            options,
+          );
           // Firefox MV3 content-script permissions must be written before launch.
           const context = await browserType.launchPersistentContext(
             userDataDir,

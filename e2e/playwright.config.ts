@@ -5,7 +5,10 @@ const config: PlaywrightTestConfig = {
   testDir: __dirname,
   testMatch: /extension\.test\.ts$/,
   forbidOnly: true,
-  reporter: "line",
+  reporter:
+    process.env.CI && process.env.PEER_TARGET !== "1.12.0"
+      ? [["github"], ["line"]]
+      : "line",
   workers: 1,
   outputDir: path.resolve(__dirname, "test-results"),
   projects: [

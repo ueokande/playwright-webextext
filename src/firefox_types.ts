@@ -1,6 +1,7 @@
 export type FirefoxRDPAddonActor = {
   id: string;
   actor: string;
+  manifestURL?: string;
 };
 
 export type RDPRequestType =

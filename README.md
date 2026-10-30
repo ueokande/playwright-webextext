@@ -103,6 +103,31 @@ Firefox. Chromium incognito permission configuration is not supported.
 option for Firefox projects. Use its `context`/`page` fixtures; the `browser`
 fixture uses `launch()` and cannot enable private-window access.
 
+## Firefox extension UUIDs
+
+Use the manifest's Gecko ID to look up an installed extension's internal UUID:
+
+```typescript
+import { getFirefoxExtensionUUID, withExtension } from "playwright-webextext";
+import { firefox } from "playwright";
+
+const browserType = withExtension(firefox, "path/to/your/extension");
+const context = await browserType.launchPersistentContext("path/to/profile");
+try {
+  const uuid = await getFirefoxExtensionUUID(context, "extension@example.com");
+  console.log(`moz-extension://${uuid}/`);
+} finally {
+  await context.close();
+}
+```
+
+The helper also accepts a Firefox `Browser` or `BrowserServer` returned by the
+wrapper, or a `context` from `createFixture()`. Call it while the instance is
+running. It reads Firefox's installed-addon metadata and rejects unknown add-on
+IDs and instances not created by this library. The Gecko ID is distinct from the
+internal UUID. Looking up a UUID does not remove Playwright's restrictions on
+automating Firefox extension pages; see [#86](https://github.com/ueokande/playwright-webextext/issues/86).
+
 ## Manifest v3 support
 
 The playwright-webextext does not fully support manifest v3 on Firefox.

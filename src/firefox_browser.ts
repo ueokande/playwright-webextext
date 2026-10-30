@@ -9,6 +9,7 @@ import type {
 } from "playwright";
 import { FirefoxAddonInstaller } from "./firefox_addon_installer";
 import { FirefoxExtensionPreferenceRepository } from "./firefox_extension_preferences";
+import { firefoxDebuggingPorts } from "./firefox_extension_uuid";
 import { FirefoxOverrides } from "./firefox_overrides";
 import { findFreeTcpPort } from "./firefox_remote";
 
@@ -61,6 +62,7 @@ export class FirefoxWithExtension implements BrowserType {
       firefoxUserPrefs,
     });
     await this.installAddons(port);
+    firefoxDebuggingPorts.set(browser, port);
     return browser;
   }
 
@@ -87,6 +89,7 @@ export class FirefoxWithExtension implements BrowserType {
       },
     );
     await this.installAddons(port);
+    firefoxDebuggingPorts.set(browser, port);
     return browser;
   }
 
@@ -102,6 +105,7 @@ export class FirefoxWithExtension implements BrowserType {
       firefoxUserPrefs,
     });
     await this.installAddons(port);
+    firefoxDebuggingPorts.set(browserServer, port);
     return browserServer;
   }
 

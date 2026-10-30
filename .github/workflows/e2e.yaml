@@ -8,28 +8,28 @@ permissions:
 
 jobs:
   e2e:
-    name: E2E (${{ matrix.os }}, Playwright ${{ matrix.peer }})
+    name: E2E (${{ matrix.consumer }}, ${{ matrix.os }}, ${{ matrix.peer }})
     strategy:
       fail-fast: false
       matrix:
+        consumer: [playwright, playwright-test]
+        os: [ubuntu, macos, windows]
+        peer: ['1.12.0', latest]
+        exclude:
+        - os: macos
+          peer: '1.12.0'
+        - os: windows
+          peer: '1.12.0'
         include:
         - os: ubuntu
           peer: '1.12.0'
           container: mcr.microsoft.com/playwright:v1.12.0-focal
-        - os: ubuntu
-          peer: latest
-          container: ''
-        - os: macos
-          peer: latest
-          container: ''
-        - os: windows
-          peer: latest
-          container: ''
     runs-on: ${{ matrix.os }}-latest
-    container: ${{ matrix.container }}
+    container: ${{ matrix.container || '' }}
     timeout-minutes: 20
     env:
       PEER_TARGET: ${{ matrix.peer }}
+      PEER_PACKAGE: ${{ matrix.consumer == 'playwright-test' && '@playwright/test' || 'playwright' }}
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -40,19 +40,19 @@ jobs:
     - run: pnpm install --frozen-lockfile
     - name: Pack and prepare the E2E consumer
       id: prepare
-      run: pnpm run e2e:prepare
+      run: pnpm run e2e:prepare ${{ matrix.consumer }}
     - name: Install the packed library and peer target
       working-directory: ${{ steps.prepare.outputs.workspace }}
       shell: bash
-      run: pnpm add --save-exact --ignore-scripts "playwright@$PEER_TARGET" "@playwright/test@$PEER_TARGET"
+      run: npm install --save-exact --ignore-scripts --no-audit --no-fund "$PEER_PACKAGE@$PEER_TARGET"
     - name: Install browser system dependencies
       if: runner.os == 'Linux' && matrix.peer == 'latest'
       working-directory: ${{ steps.prepare.outputs.workspace }}
-      run: pnpm exec playwright install-deps chromium firefox
+      run: npm exec -- playwright install-deps chromium firefox
     - name: Install browsers for the peer target
       if: matrix.peer == 'latest'
       working-directory: ${{ steps.prepare.outputs.workspace }}
-      run: pnpm exec playwright install chromium firefox
+      run: npm exec -- playwright install chromium firefox
       timeout-minutes: 10
     - name: Prepare the historical Firefox display environment
       if: matrix.peer == '1.12.0'
@@ -66,8 +66,8 @@ jobs:
     - name: Run package E2E (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{ steps.prepare.outputs.workspace }}
-      run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run ${{ matrix.peer == '1.12.0' && 'test:legacy' || 'test' }}
+      run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm test
     - name: Run package E2E (macOS and Windows)
       if: runner.os != 'Linux'
       working-directory: ${{ steps.prepare.outputs.workspace }}
-      run: pnpm test
+      run: npm test

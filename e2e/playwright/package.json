@@ -1,0 +1,11 @@
+{
+  "name": "playwright-webextext-e2e-playwright",
+  "private": true,
+  "scripts": {
+    "test": "node --test extension.test.js"
+  },
+  "dependencies": {
+    "playwright": "latest",
+    "playwright-webextext": "file:./package.tgz"
+  }
+}

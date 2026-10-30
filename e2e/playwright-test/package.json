@@ -1,0 +1,11 @@
+{
+  "name": "playwright-webextext-e2e-playwright-test",
+  "private": true,
+  "scripts": {
+    "test": "playwright test --config=playwright.config.ts"
+  },
+  "dependencies": {
+    "@playwright/test": "latest",
+    "playwright-webextext": "file:./package.tgz"
+  }
+}

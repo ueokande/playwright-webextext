@@ -1,13 +1,14 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { test as base, expect } from "@playwright/test";
 import { type WithExtensionOptions, withExtension } from "./factory";
 
 export const createFixture = (
   extPaths: string | string[],
   options: WithExtensionOptions = {},
 ) => {
+  const { test: base, expect } =
+    require("@playwright/test") as typeof import("@playwright/test");
   const test = base.extend<Record<never, never>>({
     browser: [
       async (

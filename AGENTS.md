@@ -10,6 +10,7 @@
 
 ## Development and validation
 
+- GitHub Actions dependencies are pinned in `.github/workflows/actions.lock`. After changing workflow action references, run `gh actions-lock` (install with `gh extension install github/gh-actions-lock --pin v0.4.1`) and `gh actions-lock --verify`. Review changed commits and repository identities; do not edit the generated lockfile by hand.
 - Use the Node.js version range declared in `package.json` (`engines.node`) and the pinned package manager, pnpm 12.15.0. GitHub Actions reads its Node.js version from the same file. Install with `pnpm install --frozen-lockfile`; do not regenerate the lockfile unless dependency changes are needed.
 - Follow the existing TypeScript style and Biome configuration. Prefer clear names and small, focused changes over new abstractions.
 - For code changes, run `pnpm run lint`, `pnpm run build`, and the existing tests relevant to the changed behavior. Add regression coverage for behavior changes when appropriate; documentation-only changes do not require browser tests.
